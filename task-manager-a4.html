@@ -3,10 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Task Dashboard</title>
+<title>EPRESS DESIGN AI リリースタスク</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=DM+Mono:wght@400;500&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 <style>
-  /* ===== RESET & BASE ===== */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
@@ -25,6 +24,8 @@
     --card: #ffffff;
     --shadow: 0 1px 4px rgba(79,70,229,0.08);
     --radius: 6px;
+    --header-h: 48px;
+    --adder-h: 58px;
   }
 
   body {
@@ -32,84 +33,62 @@
     background: #e8eaf6;
     color: var(--text);
     min-height: 100vh;
-    padding: 24px;
+    padding-top: calc(var(--header-h) + 16px);
+    padding-bottom: calc(var(--adder-h) + 16px);
   }
 
-  /* ===== PRINT / A4 LANDSCAPE ===== */
+  /* ===== PRINT ===== */
   @media print {
     @page { size: A4 landscape; margin: 10mm; }
-    body { background: white; padding: 0; margin: 0; }
+    body { background: white; padding: 0; }
     .no-print { display: none !important; }
-    .print-area { box-shadow: none !important; page-break-inside: avoid; }
     .task-card { break-inside: avoid; }
-    .subtask-list { display: block !important; }
-    button, .add-btn, .print-btn { display: none !important; }
-    .header-actions { display: none !important; }
+    .subtask-list { display: flex !important; }
+    .dash-header { position: static !important; box-shadow: none; }
+    .add-task-fixed { display: none !important; }
   }
 
-  /* ===== SCREEN WRAPPER ===== */
-  .screen-wrapper {
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-  /* ===== PRINT AREA (A4 landscape proportions) ===== */
-  .print-area {
-    background: var(--white);
-    border-radius: 12px;
-    box-shadow: 0 8px 40px rgba(79,70,229,0.12);
-    overflow: hidden;
-    /* A4横: 297mm x 210mm → approx 1122px x 794px at 96dpi */
-    width: 100%;
-    aspect-ratio: 297/210;
-    min-height: 580px;
-    display: flex;
-    flex-direction: column;
-  }
-
-  /* ===== HEADER ===== */
+  /* ===== HEADER (sticky top) ===== */
   .dash-header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
     background: linear-gradient(135deg, var(--ink) 0%, var(--ink2) 60%, #3730a3 100%);
     color: white;
-    padding: 14px 24px;
+    height: var(--header-h);
+    padding: 0 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    flex-shrink: 0;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.2);
   }
 
   .header-left {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 10px;
+    flex-shrink: 0;
   }
 
   .logo-mark {
-    width: 36px; height: 36px;
+    width: 26px; height: 26px;
     background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border-radius: 8px;
+    border-radius: 6px;
     display: flex; align-items: center; justify-content: center;
     font-family: 'Playfair Display', serif;
-    font-size: 18px;
+    font-size: 13px;
     font-weight: 700;
     box-shadow: 0 2px 8px rgba(99,102,241,0.5);
+    flex-shrink: 0;
   }
 
-  .header-title-group { display: flex; flex-direction: column; }
   .header-title {
     font-family: 'Playfair Display', serif;
-    font-size: 18px;
+    font-size: 15px;
     font-weight: 700;
     letter-spacing: 0.02em;
-    line-height: 1.2;
-  }
-  .header-subtitle {
-    font-size: 10px;
-    opacity: 0.6;
-    letter-spacing: 0.05em;
-    font-weight: 300;
-    margin-top: 1px;
+    white-space: nowrap;
   }
 
   .header-center {
@@ -117,141 +96,100 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 24px;
+    gap: 16px;
   }
 
-  /* Overall progress in header */
+  /* Progress block – half height */
   .overall-progress-block {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     background: rgba(255,255,255,0.08);
-    border-radius: 8px;
-    padding: 8px 16px;
+    border-radius: 6px;
+    padding: 4px 12px;
   }
   .overall-pct {
     font-family: 'DM Mono', monospace;
-    font-size: 28px;
+    font-size: 18px;
     font-weight: 500;
     line-height: 1;
   }
-  .overall-pct span { font-size: 14px; opacity: 0.7; }
-  .overall-label { font-size: 9px; opacity: 0.6; letter-spacing: 0.08em; }
+  .overall-pct span { font-size: 11px; opacity: 0.7; }
   .overall-bar-wrap {
-    width: 120px;
-    height: 6px;
+    width: 100px;
+    height: 3px;
     background: rgba(255,255,255,0.2);
-    border-radius: 3px;
+    border-radius: 2px;
     overflow: hidden;
-    margin-top: 4px;
+    margin-top: 3px;
   }
   .overall-bar-fill {
     height: 100%;
     background: linear-gradient(90deg, #818cf8, #a78bfa);
-    border-radius: 3px;
+    border-radius: 2px;
     transition: width 0.5s ease;
   }
+  .overall-label { font-size: 8px; opacity: 0.6; letter-spacing: 0.08em; margin-top: 2px; }
 
-  /* Stats pills */
-  .stat-pills { display: flex; gap: 8px; }
+  .stat-pills { display: flex; gap: 6px; }
   .stat-pill {
     background: rgba(255,255,255,0.1);
     border: 1px solid rgba(255,255,255,0.15);
     border-radius: 20px;
-    padding: 4px 10px;
-    font-size: 10px;
-    display: flex; align-items: center; gap: 5px;
+    padding: 3px 8px;
+    font-size: 9px;
+    display: flex; align-items: center; gap: 4px;
   }
-  .stat-pill .dot { width: 6px; height: 6px; border-radius: 50%; }
-  .stat-pill .num { font-family: 'DM Mono', monospace; font-weight: 500; font-size: 12px; }
+  .stat-pill .dot { width: 5px; height: 5px; border-radius: 50%; }
+  .stat-pill .num { font-family: 'DM Mono', monospace; font-weight: 500; font-size: 11px; }
 
-  .header-right { display: flex; align-items: center; gap: 8px; }
+  .header-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
   .header-date {
-    font-size: 10px; opacity: 0.5;
+    font-size: 9px; opacity: 0.5;
     font-family: 'DM Mono', monospace;
     letter-spacing: 0.05em;
   }
+  .hdr-btn {
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 10px;
+    cursor: pointer;
+    font-family: 'Noto Sans JP', sans-serif;
+    border: none;
+    transition: background 0.2s;
+  }
+  .hdr-btn.print {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: white;
+  }
+  .hdr-btn.print:hover { background: rgba(255,255,255,0.25); }
+  .hdr-btn.reset {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.65);
+  }
+  .hdr-btn.reset:hover { background: rgba(220,38,38,0.25); color: white; }
 
-  /* Project title editable */
-  .project-title-wrap {
+  /* ===== MAIN ===== */
+  .main-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 16px 20px;
+  }
+
+  .task-list {
     display: flex;
-    align-items: center;
+    flex-direction: column;
     gap: 8px;
   }
-  .project-title-input {
-    font-family: 'Playfair Display', serif;
-    font-size: 18px;
-    font-weight: 700;
-    background: transparent;
-    border: none;
-    color: white;
-    outline: none;
-    width: 280px;
-    cursor: text;
-  }
-  .project-title-input::placeholder { opacity: 0.4; }
 
-  /* ===== BODY ===== */
-  .dash-body {
-    flex: 1;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 0;
-    overflow: hidden;
+  .empty-state {
+    text-align: center;
+    padding: 48px 20px;
+    color: var(--sub);
+    font-size: 13px;
   }
-
-  /* ===== COLUMN ===== */
-  .task-col {
-    border-right: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-  .task-col:last-child { border-right: none; }
-
-  .col-header {
-    padding: 10px 14px 8px;
-    border-bottom: 2px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: var(--mist);
-    flex-shrink: 0;
-  }
-  .col-title-wrap { display: flex; align-items: center; gap: 7px; }
-  .col-dot { width: 8px; height: 8px; border-radius: 50%; }
-  .col-title { font-weight: 700; font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink); }
-  .col-count {
-    background: var(--accent);
-    color: white;
-    font-size: 9px;
-    font-family: 'DM Mono', monospace;
-    border-radius: 10px;
-    padding: 1px 6px;
-    font-weight: 500;
-  }
-
-  /* Column progress bar */
-  .col-progress-bar {
-    height: 3px;
-    background: var(--border);
-    flex-shrink: 0;
-  }
-  .col-progress-fill {
-    height: 100%;
-    transition: width 0.4s ease;
-  }
-
-  .col-tasks {
-    flex: 1;
-    overflow-y: auto;
-    padding: 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .col-tasks::-webkit-scrollbar { width: 3px; }
-  .col-tasks::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
   /* ===== TASK CARD ===== */
   .task-card {
@@ -261,19 +199,19 @@
     overflow: hidden;
     box-shadow: var(--shadow);
     transition: box-shadow 0.2s;
+    animation: slideUp 0.2s ease;
   }
   .task-card:hover { box-shadow: 0 3px 12px rgba(79,70,229,0.12); }
-  .task-card.done { border-left: 3px solid var(--done); opacity: 0.75; }
+  .task-card.done { border-left: 3px solid var(--done); opacity: 0.72; }
 
   .task-main {
-    padding: 8px 10px;
+    padding: 10px 12px;
     display: flex;
     align-items: flex-start;
     gap: 8px;
   }
 
-  /* Custom checkbox */
-  .cb-wrap { flex-shrink: 0; margin-top: 1px; }
+  .cb-wrap { flex-shrink: 0; margin-top: 2px; }
   .cb-wrap input[type="checkbox"] { display: none; }
   .cb-label {
     display: flex; align-items: center; justify-content: center;
@@ -284,414 +222,237 @@
     transition: all 0.2s;
     background: white;
   }
-  .cb-wrap input:checked + .cb-label {
-    background: var(--done);
-    border-color: var(--done);
-  }
+  .cb-wrap input:checked + .cb-label { background: var(--done); border-color: var(--done); }
   .cb-wrap input:checked + .cb-label::after {
-    content: '✓';
-    color: white;
-    font-size: 10px;
-    font-weight: 700;
-    line-height: 1;
+    content: '✓'; color: white; font-size: 10px; font-weight: 700; line-height: 1;
   }
 
   .task-info { flex: 1; min-width: 0; }
   .task-name {
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--ink);
-    line-height: 1.4;
-    word-break: break-all;
+    font-size: 13px; font-weight: 500; color: var(--ink); line-height: 1.4; word-break: break-all;
   }
   .task-name.done-text { text-decoration: line-through; color: var(--sub); }
 
   .task-meta {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-top: 4px;
-    flex-wrap: wrap;
+    display: flex; align-items: center; gap: 6px; margin-top: 4px; flex-wrap: wrap;
   }
   .check-date {
-    font-size: 9px;
-    font-family: 'DM Mono', monospace;
-    color: var(--done);
-    background: #ecfdf5;
-    padding: 1px 5px;
-    border-radius: 3px;
+    font-size: 9px; font-family: 'DM Mono', monospace; color: var(--done);
+    background: #ecfdf5; padding: 1px 5px; border-radius: 3px;
   }
-  .task-tag {
-    font-size: 9px;
-    padding: 1px 5px;
-    border-radius: 3px;
-    font-weight: 500;
-  }
-
-  /* Priority badge */
   .priority-badge {
-    font-size: 8px;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    padding: 1px 5px;
-    border-radius: 3px;
-    text-transform: uppercase;
+    font-size: 8px; font-weight: 700; letter-spacing: 0.05em;
+    padding: 1px 5px; border-radius: 3px; text-transform: uppercase;
   }
   .p-high { background: #fee2e2; color: var(--danger); }
   .p-mid  { background: #fef3c7; color: var(--warn); }
   .p-low  { background: #e0f2fe; color: #0369a1; }
 
-  .task-actions { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
-
-  /* Mini progress meter on card */
-  .task-progress-mini {
-    display: flex; align-items: center; gap: 5px; margin-top: 5px;
-  }
-  .mini-bar {
-    flex: 1; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden;
-  }
-  .mini-bar-fill { height: 100%; border-radius: 2px; transition: width 0.3s ease; }
-  .mini-pct {
-    font-size: 9px; font-family: 'DM Mono', monospace; color: var(--sub); min-width: 26px; text-align: right;
-  }
-
-  /* Toggle subtask button */
-  .toggle-sub {
+  .task-actions { display: flex; align-items: center; flex-shrink: 0; }
+  .del-btn {
     background: none; border: none; cursor: pointer;
-    color: var(--sub); font-size: 10px; padding: 2px 4px;
-    border-radius: 3px; display: flex; align-items: center; gap: 3px;
-    transition: background 0.15s;
-    white-space: nowrap;
+    color: #d1d5db; font-size: 12px; padding: 2px 4px;
+    border-radius: 3px; opacity: 0; transition: opacity 0.2s, color 0.2s;
+  }
+  .task-card:hover .del-btn { opacity: 1; }
+  .del-btn:hover { color: var(--danger); }
+
+  .task-progress-mini { display: flex; align-items: center; gap: 5px; margin-top: 5px; }
+  .mini-bar { flex: 1; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .mini-bar-fill { height: 100%; border-radius: 2px; transition: width 0.3s ease; }
+  .mini-pct { font-size: 9px; font-family: 'DM Mono', monospace; color: var(--sub); min-width: 26px; text-align: right; }
+
+  .toggle-sub {
+    background: none; border: none; cursor: pointer; color: var(--sub);
+    font-size: 10px; padding: 2px 4px; border-radius: 3px;
+    display: flex; align-items: center; gap: 3px;
+    transition: background 0.15s; white-space: nowrap;
   }
   .toggle-sub:hover { background: var(--mist); }
   .toggle-sub .arrow { transition: transform 0.2s; display: inline-block; font-size: 8px; }
   .toggle-sub.open .arrow { transform: rotate(90deg); }
-
-  /* Delete btn */
-  .del-btn {
-    background: none; border: none; cursor: pointer;
-    color: #d1d5db; font-size: 12px; padding: 2px;
-    border-radius: 3px; opacity: 0;
-    transition: opacity 0.2s, color 0.2s;
-  }
-  .task-card:hover .del-btn { opacity: 1; }
-  .del-btn:hover { color: var(--danger); }
 
   /* ===== SUBTASKS ===== */
   .subtask-list {
     border-top: 1px solid var(--border);
     background: #f9fafb;
     padding: 6px 8px;
-    display: none;
-    flex-direction: column;
-    gap: 4px;
+    display: none; flex-direction: column; gap: 4px;
   }
   .subtask-list.open { display: flex; }
 
   .subtask-item {
     display: flex; align-items: center; gap: 7px;
-    padding: 3px 4px;
-    border-radius: 4px;
-    transition: background 0.15s;
+    padding: 3px 4px; border-radius: 4px; transition: background 0.15s;
   }
   .subtask-item:hover { background: var(--mist); }
-  .subtask-item .cb-label {
-    width: 13px; height: 13px; border-radius: 3px;
-  }
+  .subtask-item .cb-label { width: 13px; height: 13px; border-radius: 3px; }
   .subtask-item .cb-wrap input:checked + .cb-label::after { font-size: 8px; }
-  .subtask-name {
-    font-size: 11px; color: var(--text); flex: 1; min-width: 0; word-break: break-all;
-  }
+  .subtask-name { font-size: 11px; color: var(--text); flex: 1; min-width: 0; word-break: break-all; }
   .subtask-name.done-text { text-decoration: line-through; color: var(--sub); }
   .sub-date { font-size: 9px; font-family: 'DM Mono', monospace; color: var(--done); white-space: nowrap; }
   .sub-del {
     background: none; border: none; cursor: pointer;
-    color: #d1d5db; font-size: 10px; opacity: 0;
-    transition: opacity 0.15s;
+    color: #d1d5db; font-size: 10px; opacity: 0; transition: opacity 0.15s; padding: 2px;
   }
   .subtask-item:hover .sub-del { opacity: 1; }
   .sub-del:hover { color: var(--danger); }
 
-  /* Add subtask */
-  .add-sub-form {
-    display: flex; gap: 4px; margin-top: 4px;
-  }
+  .add-sub-form { display: flex; gap: 4px; margin-top: 4px; }
   .add-sub-input {
     flex: 1; font-size: 10px; padding: 3px 6px;
     border: 1px solid var(--border); border-radius: 4px;
-    outline: none; font-family: 'Noto Sans JP', sans-serif;
-    background: white;
+    outline: none; font-family: 'Noto Sans JP', sans-serif; background: white;
   }
   .add-sub-input:focus { border-color: var(--accent); }
   .add-sub-btn {
-    background: var(--accent); color: white;
-    border: none; border-radius: 4px;
-    font-size: 10px; padding: 3px 7px; cursor: pointer;
-    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--accent); color: white; border: none; border-radius: 4px;
+    font-size: 10px; padding: 3px 8px; cursor: pointer; font-family: 'Noto Sans JP', sans-serif;
   }
 
-  /* ===== ADD TASK ===== */
-  .add-task-wrap {
-    padding: 8px;
-    border-top: 1px solid var(--border);
-    background: var(--mist);
-    flex-shrink: 0;
-  }
-  .add-task-form { display: flex; gap: 4px; }
-  .add-task-input {
-    flex: 1; font-size: 11px; padding: 5px 8px;
-    border: 1px solid var(--border); border-radius: 4px;
-    outline: none; font-family: 'Noto Sans JP', sans-serif;
+  /* ===== FIXED BOTTOM ADD TASK BAR ===== */
+  .add-task-fixed {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 100;
     background: white;
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -2px 12px rgba(79,70,229,0.1);
+    padding: 10px 20px;
+    height: var(--adder-h);
+  }
+  .add-task-inner {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .add-task-input {
+    flex: 1; font-size: 12px; padding: 7px 10px;
+    border: 1px solid var(--border); border-radius: 4px;
+    outline: none; font-family: 'Noto Sans JP', sans-serif; background: white;
   }
   .add-task-input:focus { border-color: var(--accent); }
   .add-task-priority {
-    font-size: 10px; padding: 5px 6px;
+    font-size: 11px; padding: 7px 8px;
     border: 1px solid var(--border); border-radius: 4px;
     background: white; cursor: pointer; outline: none;
     font-family: 'Noto Sans JP', sans-serif;
   }
   .add-task-btn {
-    background: var(--accent); color: white;
-    border: none; border-radius: 4px;
-    font-size: 11px; padding: 5px 10px; cursor: pointer;
-    font-family: 'Noto Sans JP', sans-serif; font-weight: 500;
-    white-space: nowrap;
+    background: var(--accent); color: white; border: none; border-radius: 4px;
+    font-size: 12px; padding: 7px 14px; cursor: pointer;
+    font-family: 'Noto Sans JP', sans-serif; font-weight: 500; white-space: nowrap;
   }
   .add-task-btn:hover { background: #4338ca; }
 
-  /* ===== FOOTER ===== */
-  .dash-footer {
-    border-top: 1px solid var(--border);
-    background: var(--mist);
-    padding: 7px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-shrink: 0;
-  }
-  .footer-note {
-    font-size: 9px; color: var(--sub); font-family: 'DM Mono', monospace;
-    letter-spacing: 0.04em;
-  }
-  .legend { display: flex; gap: 12px; align-items: center; }
-  .legend-item { display: flex; align-items: center; gap: 4px; font-size: 9px; color: var(--sub); }
-  .legend-dot { width: 7px; height: 7px; border-radius: 50%; }
-
-  /* ===== CONTROLS (screen only) ===== */
-  .controls-bar {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 16px;
-    flex-wrap: wrap; gap: 10px;
-  }
-  .controls-bar h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: 20px; color: var(--ink);
-  }
-  .control-btns { display: flex; gap: 8px; }
-  .ctrl-btn {
-    padding: 8px 16px; border-radius: 6px; font-size: 12px;
-    cursor: pointer; font-family: 'Noto Sans JP', sans-serif;
-    border: none; font-weight: 500;
-    display: flex; align-items: center; gap: 6px;
-    transition: all 0.2s;
-  }
-  .ctrl-btn.primary { background: var(--accent); color: white; }
-  .ctrl-btn.primary:hover { background: #4338ca; }
-  .ctrl-btn.secondary { background: white; color: var(--ink); border: 1px solid var(--border); }
-  .ctrl-btn.secondary:hover { background: var(--mist); }
-
-  /* Animate in */
   @keyframes slideUp {
     from { opacity: 0; transform: translateY(6px); }
     to   { opacity: 1; transform: translateY(0); }
   }
-  .task-card { animation: slideUp 0.2s ease; }
 </style>
 </head>
 <body>
 
-<div class="screen-wrapper">
-  <!-- Controls (screen only) -->
-  <div class="controls-bar no-print">
-    <h1>📋 Task Dashboard</h1>
-    <div class="control-btns">
-      <button class="ctrl-btn secondary" onclick="clearAll()">🗑 リセット</button>
-      <button class="ctrl-btn primary" onclick="window.print()">🖨 A4印刷</button>
+<!-- Sticky Header -->
+<div class="dash-header">
+  <div class="header-left">
+    <div class="logo-mark">E</div>
+    <div class="header-title">EPRESS DESIGN AI リリースタスク</div>
+  </div>
+
+  <div class="header-center">
+    <div class="overall-progress-block">
+      <div>
+        <div class="overall-pct" id="overallPct">0<span>%</span></div>
+        <div class="overall-bar-wrap"><div class="overall-bar-fill" id="overallBar" style="width:0%"></div></div>
+        <div class="overall-label">OVERALL PROGRESS</div>
+      </div>
+    </div>
+    <div class="stat-pills">
+      <div class="stat-pill">
+        <div class="dot" style="background:#6366f1"></div>
+        <span>総数</span><span class="num" id="statTotal">0</span>
+      </div>
+      <div class="stat-pill">
+        <div class="dot" style="background:#059669"></div>
+        <span>完了</span><span class="num" id="statDone">0</span>
+      </div>
+      <div class="stat-pill">
+        <div class="dot" style="background:#6b7280"></div>
+        <span>残り</span><span class="num" id="statRemain">0</span>
+      </div>
     </div>
   </div>
 
-  <!-- Print Area -->
-  <div class="print-area" id="printArea">
+  <div class="header-right no-print">
+    <div class="header-date" id="headerDate"></div>
+    <button class="hdr-btn reset" onclick="clearAll()">リセット</button>
+    <button class="hdr-btn print" onclick="window.print()">🖨 印刷</button>
+  </div>
+</div>
 
-    <!-- Header -->
-    <div class="dash-header">
-      <div class="header-left">
-        <div class="logo-mark">T</div>
-        <div class="header-title-group">
-          <input class="project-title-input" id="projectTitle" value="プロジェクト進捗ダッシュボード" placeholder="プロジェクト名を入力" />
-          <div class="header-subtitle">EXECUTIVE TASK OVERVIEW</div>
-        </div>
-      </div>
+<!-- Task List -->
+<div class="main-content">
+  <div class="task-list" id="taskList"></div>
+</div>
 
-      <div class="header-center">
-        <div class="overall-progress-block">
-          <div>
-            <div class="overall-pct" id="overallPct">0<span>%</span></div>
-            <div class="overall-bar-wrap"><div class="overall-bar-fill" id="overallBar" style="width:0%"></div></div>
-            <div class="overall-label" style="margin-top:3px">OVERALL PROGRESS</div>
-          </div>
-        </div>
-        <div class="stat-pills">
-          <div class="stat-pill">
-            <div class="dot" style="background:#6366f1"></div>
-            <span>総数</span><span class="num" id="statTotal">0</span>
-          </div>
-          <div class="stat-pill">
-            <div class="dot" style="background:#059669"></div>
-            <span>完了</span><span class="num" id="statDone">0</span>
-          </div>
-          <div class="stat-pill">
-            <div class="dot" style="background:#d97706"></div>
-            <span>進行中</span><span class="num" id="statInProg">0</span>
-          </div>
-          <div class="stat-pill">
-            <div class="dot" style="background:#6b7280"></div>
-            <span>未着手</span><span class="num" id="statTodo">0</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="header-right">
-        <div class="header-date" id="headerDate"></div>
-      </div>
-    </div>
-
-    <!-- Body: 3 columns -->
-    <div class="dash-body" id="dashBody">
-      <!-- Columns injected by JS -->
-    </div>
-
-    <!-- Footer -->
-    <div class="dash-footer">
-      <div class="footer-note" id="footerNote">Confidential – Internal Use Only</div>
-      <div class="legend">
-        <div class="legend-item"><div class="legend-dot" style="background:var(--danger)"></div>高優先</div>
-        <div class="legend-item"><div class="legend-dot" style="background:var(--warn)"></div>中優先</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#0369a1"></div>低優先</div>
-        <div class="legend-item"><div class="legend-dot" style="background:var(--done)"></div>完了</div>
-      </div>
-    </div>
+<!-- Fixed Bottom Add Task -->
+<div class="add-task-fixed no-print">
+  <div class="add-task-inner">
+    <input class="add-task-input" placeholder="タスクを追加..." id="addInput" onkeydown="handleAddKey(event)">
+    <select class="add-task-priority" id="addPrio">
+      <option value="high">高優先</option>
+      <option value="mid" selected>中優先</option>
+      <option value="low">低優先</option>
+    </select>
+    <button class="add-task-btn" onclick="addTask()">＋ タスク追加</button>
   </div>
 </div>
 
 <script>
-// ===== DATA =====
-const COLS = [
-  { id: 'todo',    label: '未着手',  color: '#6b7280', fillColor: '#9ca3af' },
-  { id: 'inprog',  label: '進行中',  color: '#d97706', fillColor: '#f59e0b' },
-  { id: 'done',    label: '完了',    color: '#059669', fillColor: '#10b981' },
-];
-
-let tasks = JSON.parse(localStorage.getItem('dashTasks') || 'null') || [
-  { id: t(), col: 'todo',   name: 'ステークホルダーへのヒアリング', priority: 'high', done: false, doneDate: null,
-    subtasks: [
-      { id: t(), name: '部長へのヒアリング', done: false, doneDate: null },
-      { id: t(), name: '現場担当者ヒアリング', done: false, doneDate: null },
-    ], subOpen: true },
-  { id: t(), col: 'todo',   name: 'KPI指標の策定', priority: 'mid', done: false, doneDate: null,
-    subtasks: [], subOpen: false },
-  { id: t(), col: 'inprog', name: 'システム要件定義書の作成', priority: 'high', done: false, doneDate: null,
-    subtasks: [
-      { id: t(), name: '機能要件リストアップ', done: true, doneDate: today() },
-      { id: t(), name: '非機能要件の確認', done: false, doneDate: null },
-      { id: t(), name: 'レビュー実施', done: false, doneDate: null },
-    ], subOpen: true },
-  { id: t(), col: 'inprog', name: 'デザインプロトタイプ', priority: 'mid', done: false, doneDate: null,
-    subtasks: [
-      { id: t(), name: 'ワイヤーフレーム作成', done: true, doneDate: today() },
-    ], subOpen: false },
-  { id: t(), col: 'done',   name: '市場調査レポート', priority: 'low', done: true, doneDate: '2025-03-10',
-    subtasks: [
-      { id: t(), name: 'データ収集', done: true, doneDate: '2025-03-08' },
-      { id: t(), name: 'レポート作成', done: true, doneDate: '2025-03-10' },
-    ], subOpen: false },
-  { id: t(), col: 'done',   name: 'チーム体制の確定', priority: 'high', done: true, doneDate: '2025-03-05',
-    subtasks: [], subOpen: false },
-];
-
 function t() { return '_' + Math.random().toString(36).slice(2,9); }
 function today() { return new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'2-digit',day:'2-digit'}).replace(/\//g,'-'); }
-function save() { localStorage.setItem('dashTasks', JSON.stringify(tasks)); }
+function save() { localStorage.setItem('epressTasks', JSON.stringify(tasks)); }
 function clearAll() { if(confirm('全データをリセットしますか？')) { tasks=[]; save(); render(); } }
 
-// ===== RENDER =====
-function render() {
-  renderHeader();
-  renderBody();
-}
+let tasks = JSON.parse(localStorage.getItem('epressTasks') || 'null') || [
+  { id:t(), name:'ステークホルダーへのヒアリング', priority:'high', done:false, doneDate:null,
+    subtasks:[
+      { id:t(), name:'部長へのヒアリング', done:false, doneDate:null },
+      { id:t(), name:'現場担当者ヒアリング', done:false, doneDate:null },
+    ], subOpen:true },
+  { id:t(), name:'KPI指標の策定', priority:'mid', done:false, doneDate:null, subtasks:[], subOpen:false },
+  { id:t(), name:'システム要件定義書の作成', priority:'high', done:false, doneDate:null,
+    subtasks:[
+      { id:t(), name:'機能要件リストアップ', done:true, doneDate:today() },
+      { id:t(), name:'非機能要件の確認', done:false, doneDate:null },
+      { id:t(), name:'レビュー実施', done:false, doneDate:null },
+    ], subOpen:true },
+];
 
-function renderHeader() {
+function render() {
   const total = tasks.length;
-  const allSubs = tasks.flatMap(t => t.subtasks);
+  const allSubs = tasks.flatMap(tk => tk.subtasks);
   const totalItems = total + allSubs.length;
-  const doneItems = tasks.filter(t=>t.done).length + allSubs.filter(s=>s.done).length;
+  const doneItems = tasks.filter(tk=>tk.done).length + allSubs.filter(s=>s.done).length;
   const pct = totalItems === 0 ? 0 : Math.round(doneItems / totalItems * 100);
 
   document.getElementById('overallPct').innerHTML = pct + '<span>%</span>';
   document.getElementById('overallBar').style.width = pct + '%';
   document.getElementById('statTotal').textContent = total;
-  document.getElementById('statDone').textContent = tasks.filter(t=>t.done).length;
-  document.getElementById('statInProg').textContent = tasks.filter(t=>t.col==='inprog'&&!t.done).length;
-  document.getElementById('statTodo').textContent = tasks.filter(t=>t.col==='todo').length;
+  document.getElementById('statDone').textContent = tasks.filter(tk=>tk.done).length;
+  document.getElementById('statRemain').textContent = tasks.filter(tk=>!tk.done).length;
   document.getElementById('headerDate').textContent = new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric'});
-}
 
-function renderBody() {
-  const body = document.getElementById('dashBody');
-  body.innerHTML = '';
-  COLS.forEach(col => {
-    const colTasks = tasks.filter(t => t.col === col.id);
-    const colDone = colTasks.filter(t => t.done).length + colTasks.flatMap(t=>t.subtasks).filter(s=>s.done).length;
-    const colTotal = colTasks.length + colTasks.flatMap(t=>t.subtasks).length;
-    const colPct = colTotal === 0 ? 0 : Math.round(colDone / colTotal * 100);
-
-    const colEl = document.createElement('div');
-    colEl.className = 'task-col';
-    colEl.dataset.col = col.id;
-
-    colEl.innerHTML = `
-      <div class="col-header">
-        <div class="col-title-wrap">
-          <div class="col-dot" style="background:${col.color}"></div>
-          <div class="col-title">${col.label}</div>
-          <div class="col-count">${colTasks.length}</div>
-        </div>
-        <div style="font-size:9px;font-family:'DM Mono',monospace;color:var(--sub)">${colPct}%</div>
-      </div>
-      <div class="col-progress-bar">
-        <div class="col-progress-fill" style="width:${colPct}%;background:${col.fillColor}"></div>
-      </div>
-      <div class="col-tasks" id="tasks-${col.id}"></div>
-      <div class="add-task-wrap no-print">
-        <div class="add-task-form">
-          <input class="add-task-input" placeholder="タスクを追加..." id="input-${col.id}" onkeydown="handleAddKey(event,'${col.id}')">
-          <select class="add-task-priority" id="prio-${col.id}">
-            <option value="high">高</option>
-            <option value="mid" selected>中</option>
-            <option value="low">低</option>
-          </select>
-          <button class="add-task-btn" onclick="addTask('${col.id}')">＋追加</button>
-        </div>
-      </div>
-    `;
-    body.appendChild(colEl);
-
-    const tasksContainer = colEl.querySelector(`#tasks-${col.id}`);
-    colTasks.forEach(task => {
-      tasksContainer.appendChild(createTaskEl(task));
-    });
-  });
+  const list = document.getElementById('taskList');
+  list.innerHTML = '';
+  if (tasks.length === 0) {
+    list.innerHTML = '<div class="empty-state">タスクがありません。下のバーからタスクを追加してください。</div>';
+    return;
+  }
+  tasks.forEach(task => list.appendChild(createTaskEl(task)));
 }
 
 function createTaskEl(task) {
@@ -704,8 +465,8 @@ function createTaskEl(task) {
   const subPct = subTotal === 0 ? (task.done ? 100 : 0) : Math.round(subDone / subTotal * 100);
   const prioClass = {high:'p-high',mid:'p-mid',low:'p-low'}[task.priority] || 'p-mid';
   const prioLabel = {high:'高',mid:'中',low:'低'}[task.priority];
-
   const mainId = 'cb-' + task.id;
+
   card.innerHTML = `
     <div class="task-main">
       <div class="cb-wrap">
@@ -759,44 +520,42 @@ function esc(str) {
   return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// ===== INTERACTIONS =====
-function addTask(col) {
-  const inp = document.getElementById('input-' + col);
-  const prio = document.getElementById('prio-' + col);
+function addTask() {
+  const inp = document.getElementById('addInput');
+  const prio = document.getElementById('addPrio');
   const name = inp.value.trim();
   if (!name) return;
-  tasks.push({ id: t(), col, name, priority: prio.value, done: false, doneDate: null, subtasks: [], subOpen: false });
+  tasks.push({ id:t(), name, priority:prio.value, done:false, doneDate:null, subtasks:[], subOpen:false });
+  inp.value = '';
   save(); render();
-  setTimeout(() => { const el = document.getElementById('input-'+col); if(el) el.focus(); }, 0);
+  setTimeout(() => document.getElementById('addInput').focus(), 0);
 }
-function handleAddKey(e, col) { if (e.key === 'Enter') addTask(col); }
+function handleAddKey(e) { if (e.key === 'Enter') addTask(); }
 
 function toggleTask(id) {
-  const task = tasks.find(t=>t.id===id);
+  const task = tasks.find(tk=>tk.id===id);
   if (!task) return;
   task.done = !task.done;
   task.doneDate = task.done ? today() : null;
-  if (task.done) task.col = 'done';
   save(); render();
 }
 
 function toggleSub(taskId) {
-  const task = tasks.find(t=>t.id===taskId);
+  const task = tasks.find(tk=>tk.id===taskId);
   if (!task) return;
   task.subOpen = !task.subOpen;
   save(); render();
 }
 
 function toggleSub2(taskId, subId) {
-  const task = tasks.find(t=>t.id===taskId);
+  const task = tasks.find(tk=>tk.id===taskId);
   if (!task) return;
   const sub = task.subtasks.find(s=>s.id===subId);
   if (!sub) return;
   sub.done = !sub.done;
   sub.doneDate = sub.done ? today() : null;
-  // Auto-complete parent if all subs done
   if (task.subtasks.length > 0 && task.subtasks.every(s=>s.done)) {
-    task.done = true; task.doneDate = today(); task.col = 'done';
+    task.done = true; task.doneDate = today();
   } else if (task.done && !task.subtasks.every(s=>s.done)) {
     task.done = false; task.doneDate = null;
   }
@@ -807,9 +566,9 @@ function addSubtask(taskId) {
   const inp = document.getElementById('subinput-' + taskId);
   const name = inp.value.trim();
   if (!name) return;
-  const task = tasks.find(t=>t.id===taskId);
+  const task = tasks.find(tk=>tk.id===taskId);
   if (!task) return;
-  task.subtasks.push({ id: t(), name, done: false, doneDate: null });
+  task.subtasks.push({ id:t(), name, done:false, doneDate:null });
   task.subOpen = true;
   save(); render();
   setTimeout(() => { const el = document.getElementById('subinput-'+taskId); if(el) el.focus(); }, 0);
@@ -817,17 +576,16 @@ function addSubtask(taskId) {
 function handleSubKey(e, taskId) { if(e.key==='Enter') addSubtask(taskId); }
 
 function deleteTask(id) {
-  tasks = tasks.filter(t=>t.id!==id);
+  tasks = tasks.filter(tk=>tk.id!==id);
   save(); render();
 }
 function deleteSubtask(taskId, subId) {
-  const task = tasks.find(t=>t.id===taskId);
+  const task = tasks.find(tk=>tk.id===taskId);
   if (!task) return;
   task.subtasks = task.subtasks.filter(s=>s.id!==subId);
   save(); render();
 }
 
-// Init
 render();
 </script>
 </body>
