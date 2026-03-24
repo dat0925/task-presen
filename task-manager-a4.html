@@ -38,6 +38,7 @@ body {
   body { background: white; padding: 0; }
   .no-print { display: none !important; }
   .dash-header, .overall-bar-wrap { position: static !important; box-shadow: none; }
+  .overall-bar-wrap { position: relative !important; }
   .add-task-fixed { display: none !important; }
   .parent-card { break-inside: avoid; border: 1.5px solid #93c5fd !important; }
   .child-row { break-inside: avoid; }
@@ -245,7 +246,7 @@ body {
 }
 
 /* Effort bar */
-.effort-wrap { display: flex; align-items: center; gap: 3px; width: 66px; }
+.effort-wrap { display: none; align-items: center; gap: 3px; width: 66px; }
 .effort-bar  { flex: 1; height: 8px; background: #fee2e2; border-radius: 2px; overflow: hidden; }
 .effort-fill { height: 100%; background: linear-gradient(90deg, #fca5a5, #ef4444); border-radius: 2px; }
 .effort-num  {
