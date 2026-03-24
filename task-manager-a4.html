@@ -17,7 +17,6 @@
   --border: #d1d5db;
   --text:   #374151;
   --sub:    #6b7280;
-  --mist:   #f8fafc;
   --white:  #fff;
   --header-h: 42px;
   --overall-h: 30px;
@@ -46,40 +45,37 @@ body {
 
 /* ===== HEADER ===== */
 .dash-header {
-  position: fixed;
-  top: 0; left: 0; right: 0; z-index: 200;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
   background: linear-gradient(90deg, #1e3a5f 0%, #2d5282 100%);
-  color: white;
-  height: var(--header-h);
+  color: white; height: var(--header-h);
   display: flex; align-items: center;
   padding: 0 18px; gap: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.25);
 }
 .header-logo {
-  width: 24px; height: 24px;
-  background: #4f46e5; border-radius: 5px;
+  width: 24px; height: 24px; background: #4f46e5; border-radius: 5px;
   display: flex; align-items: center; justify-content: center;
   font-size: 12px; font-weight: 700; flex-shrink: 0;
 }
-.header-title { font-size: 14px; font-weight: 500; letter-spacing: 0.03em; flex: 1; }
-.header-right { display: flex; align-items: center; gap: 8px; }
-.header-date { font-size: 9px; opacity: 0.5; font-family: 'DM Mono', monospace; }
+.header-title {
+  font-size: 14px; font-weight: 500; letter-spacing: 0.03em; flex: 1;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.header-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.header-date  { font-size: 9px; opacity: 0.5; font-family: 'DM Mono', monospace; }
 .hdr-btn {
   font-size: 10px; padding: 3px 9px; border-radius: 4px; cursor: pointer;
   font-family: 'Noto Sans JP', sans-serif;
   border: 1px solid rgba(255,255,255,0.2);
-  color: rgba(255,255,255,0.85);
-  background: rgba(255,255,255,0.1);
-  transition: background 0.15s;
+  color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.1);
+  transition: background 0.15s; white-space: nowrap;
 }
 .hdr-btn:hover { background: rgba(255,255,255,0.22); }
 
 /* ===== OVERALL PROGRESS BAR ===== */
 .overall-bar-wrap {
-  position: fixed;
-  top: var(--header-h); left: 0; right: 0; z-index: 199;
-  height: var(--overall-h);
-  background: #f0fdf4;
+  position: fixed; top: var(--header-h); left: 0; right: 0; z-index: 199;
+  height: var(--overall-h); background: #f0fdf4;
   border-bottom: 1px solid #bbf7d0;
 }
 .overall-bar-fill {
@@ -88,54 +84,38 @@ body {
   transition: width 0.5s ease;
 }
 .overall-bar-label {
-  position: absolute;
-  top: 50%; left: 50%;
+  position: absolute; top: 50%; left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 12px; font-weight: 600;
-  color: #15803d;
-  font-family: 'DM Mono', monospace;
-  pointer-events: none;
+  font-size: 12px; font-weight: 600; color: #15803d;
+  font-family: 'DM Mono', monospace; pointer-events: none; white-space: nowrap;
 }
 
 /* ===== MAIN ===== */
-.main-content {
-  max-width: 1120px;
-  margin: 0 auto;
-  padding: 14px 14px;
-}
+.main-content { max-width: 1120px; margin: 0 auto; padding: 14px; }
 
-/* ===== TASK GRID (2 columns) ===== */
 .task-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  align-items: start;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 10px; align-items: start;
 }
 
 /* ===== PARENT CARD ===== */
 .parent-card {
-  background: var(--white);
-  border: 1.5px solid #93c5fd;
-  border-radius: 6px;
-  overflow: hidden;
-  animation: slideUp 0.2s ease;
+  background: var(--white); border: 1.5px solid #93c5fd;
+  border-radius: 8px; overflow: hidden; animation: slideUp 0.2s ease;
 }
 
 .parent-header {
   display: flex; align-items: center; gap: 7px;
-  padding: 8px 10px;
-  background: white;
+  padding: 8px 10px; background: white;
   border-bottom: 1px solid #e5e7eb;
 }
 
-/* Checkboxes shared */
+/* Checkboxes */
 .cb-wrap input[type="checkbox"] { display: none; }
 .cb-label {
   display: flex; align-items: center; justify-content: center;
-  width: 15px; height: 15px;
-  border: 2px solid #9ca3af;
-  border-radius: 3px;
-  cursor: pointer; background: white;
+  width: 15px; height: 15px; border: 2px solid #9ca3af;
+  border-radius: 3px; cursor: pointer; background: white;
   transition: all 0.15s; flex-shrink: 0;
 }
 .cb-wrap input:checked + .cb-label { background: var(--done); border-color: var(--done); }
@@ -145,6 +125,7 @@ body {
 
 .parent-name {
   flex: 1; font-size: 12px; font-weight: 700; color: var(--ink);
+  min-width: 0; word-break: break-all;
 }
 .parent-name.done-text { text-decoration: line-through; color: var(--sub); }
 
@@ -152,12 +133,10 @@ body {
   font-size: 11px; font-weight: 700;
   color: var(--danger); font-family: 'DM Mono', monospace; flex-shrink: 0;
 }
-
 .parent-done-date {
   font-size: 9px; font-family: 'DM Mono', monospace;
   color: var(--done); white-space: nowrap; flex-shrink: 0;
 }
-
 .parent-del {
   background: none; border: none; cursor: pointer;
   color: #d1d5db; font-size: 11px; opacity: 0; padding: 1px 3px;
@@ -167,94 +146,158 @@ body {
 .parent-del:hover { color: var(--danger); }
 
 /* Parent progress bar */
-.parent-bar-track { height: 4px; background: #e5e7eb; flex-shrink: 0; }
+.parent-bar-track { height: 4px; background: #e5e7eb; }
 .parent-bar-fill {
   height: 100%;
   background: linear-gradient(90deg, #818cf8, #a78bfa);
   transition: width 0.4s ease;
 }
 
+/* ===== STATUS ROW (親) ===== */
+.parent-sub-row {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 10px; border-bottom: 1px solid #f1f5f9;
+  background: #fafafa;
+}
+.status-label-tag { font-size: 10px; color: var(--sub); flex-shrink: 0; }
+
+.status-select {
+  font-size: 10px; font-family: 'Noto Sans JP', sans-serif;
+  border: 1px solid; border-radius: 20px;
+  padding: 2px 20px 2px 8px; cursor: pointer; outline: none;
+  transition: all 0.15s; appearance: none; -webkit-appearance: none;
+  background-repeat: no-repeat; background-position: right 6px center;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5' viewBox='0 0 8 5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%236b7280'/%3E%3C/svg%3E");
+  font-weight: 500;
+}
+
+/* ===== MEMO (親) ===== */
+.memo-wrap {
+  border-top: 1px dashed #e5e7eb;
+  padding: 0;
+}
+.memo-toggle {
+  font-size: 10px; color: var(--sub); cursor: pointer;
+  user-select: none; display: flex; align-items: center; gap: 5px;
+  padding: 5px 10px;
+}
+.memo-toggle:hover { color: var(--accent); }
+.memo-toggle .arr { font-size: 7px; transition: transform 0.2s; display: inline-block; }
+.memo-box {
+  display: none; padding: 0 10px 8px;
+}
+.memo-box.open { display: block; }
+.memo-textarea {
+  width: 100%; font-size: 11px; font-family: 'Noto Sans JP', sans-serif;
+  color: var(--text); border: 1px solid var(--border); border-radius: 4px;
+  padding: 6px 8px; resize: vertical; min-height: 54px;
+  outline: none; background: #fafafa; line-height: 1.5;
+}
+.memo-textarea:focus { border-color: var(--accent); background: white; }
+.memo-textarea::placeholder { color: #d1d5db; }
+
 /* ===== CHILD ROWS ===== */
 .children-list { padding: 2px 0; }
 
 .child-row {
-  display: flex; align-items: center; gap: 6px;
-  padding: 4px 10px 4px 26px;
-  transition: background 0.1s;
+  display: flex; align-items: flex-start; gap: 6px;
+  padding: 5px 10px 5px 22px; transition: background 0.1s;
+  border-bottom: 1px solid #f9fafb;
 }
 .child-row:hover { background: #f8fafc; }
 
-.child-cb .cb-label { width: 13px; height: 13px; border-radius: 2px; }
+.child-cb .cb-label { width: 13px; height: 13px; border-radius: 2px; margin-top: 2px; }
 .child-cb input:checked + .cb-label::after { font-size: 8px; }
 
+.child-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
 .child-name {
-  flex: 1; font-size: 11px; color: var(--text);
-  min-width: 0; word-break: break-all; line-height: 1.3;
+  font-size: 11px; color: var(--text);
+  word-break: break-all; line-height: 1.35;
 }
 .child-name.done-text { text-decoration: line-through; color: var(--sub); }
 
-/* Effort bar + number */
-.effort-wrap {
-  display: flex; align-items: center; gap: 3px;
-  flex-shrink: 0; width: 72px;
+/* child status select */
+.child-status-select {
+  font-size: 9px; font-family: 'Noto Sans JP', sans-serif;
+  border: 1px solid; border-radius: 20px;
+  padding: 1px 18px 1px 6px; cursor: pointer; outline: none;
+  appearance: none; -webkit-appearance: none;
+  background-repeat: no-repeat; background-position: right 5px center;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='4' viewBox='0 0 6 4'%3E%3Cpath d='M0 0l3 4 3-4z' fill='%236b7280'/%3E%3C/svg%3E");
+  font-weight: 500; width: fit-content; transition: all 0.15s;
 }
-.effort-bar {
-  flex: 1; height: 9px; background: #fee2e2; border-radius: 2px; overflow: hidden;
+
+/* child memo */
+.child-memo-textarea {
+  width: 100%; font-size: 10px; font-family: 'Noto Sans JP', sans-serif;
+  color: var(--text); border: 1px solid #e5e7eb; border-radius: 3px;
+  padding: 4px 6px; resize: none; min-height: 38px;
+  outline: none; background: #fafafa; line-height: 1.4;
+  display: none;
 }
-.effort-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #fca5a5, #ef4444);
-  border-radius: 2px;
+.child-memo-textarea.open { display: block; }
+.child-memo-textarea:focus { border-color: var(--accent); background: white; }
+.child-memo-textarea::placeholder { color: #d1d5db; }
+
+.child-right {
+  display: flex; flex-direction: column; align-items: flex-end;
+  gap: 3px; flex-shrink: 0; padding-top: 1px;
 }
-.effort-num {
+
+/* Effort bar */
+.effort-wrap { display: flex; align-items: center; gap: 3px; width: 66px; }
+.effort-bar  { flex: 1; height: 8px; background: #fee2e2; border-radius: 2px; overflow: hidden; }
+.effort-fill { height: 100%; background: linear-gradient(90deg, #fca5a5, #ef4444); border-radius: 2px; }
+.effort-num  {
   font-size: 10px; font-family: 'DM Mono', monospace;
-  color: #ef4444; min-width: 20px; text-align: right;
+  color: #ef4444; min-width: 18px; text-align: right;
   cursor: pointer; user-select: none;
 }
 .effort-num:hover { color: var(--accent); text-decoration: underline; }
 
-/* Completion date */
 .child-done-date {
   font-size: 9px; font-family: 'DM Mono', monospace;
-  color: var(--done); white-space: nowrap; flex-shrink: 0;
-  min-width: 38px; text-align: right;
+  color: var(--done); white-space: nowrap;
 }
+.child-memo-btn {
+  background: none; border: none; cursor: pointer;
+  font-size: 11px; color: #d1d5db; padding: 0; line-height: 1;
+  transition: color 0.15s;
+}
+.child-memo-btn:hover { color: var(--accent); }
+.child-memo-btn.active { color: var(--accent); }
 
 .child-del {
   background: none; border: none; cursor: pointer;
   color: #d1d5db; font-size: 10px; opacity: 0; padding: 1px 2px;
-  transition: opacity 0.15s; flex-shrink: 0;
+  transition: opacity 0.15s; flex-shrink: 0; align-self: flex-start; margin-top: 2px;
 }
 .child-row:hover .child-del { opacity: 1; }
 .child-del:hover { color: var(--danger); }
 
-/* Add child inline form */
+/* Add child */
 .add-child-row {
   display: flex; align-items: center; gap: 4px;
-  padding: 4px 10px 6px 26px;
-  border-top: 1px dashed #e5e7eb;
+  padding: 5px 10px 7px 22px; border-top: 1px dashed #e5e7eb;
 }
 .add-child-input {
   flex: 1; font-size: 10px; padding: 3px 6px;
   border: 1px solid var(--border); border-radius: 3px;
-  outline: none; font-family: 'Noto Sans JP', sans-serif; background: white;
+  outline: none; font-family: 'Noto Sans JP', sans-serif; min-width: 0;
 }
 .add-child-input:focus { border-color: var(--accent); }
 .add-child-btn {
   background: var(--accent); color: white; border: none; border-radius: 3px;
   font-size: 10px; padding: 3px 8px; cursor: pointer; white-space: nowrap;
-  font-family: 'Noto Sans JP', sans-serif;
+  font-family: 'Noto Sans JP', sans-serif; flex-shrink: 0;
 }
 
 /* ===== FIXED BOTTOM BAR ===== */
 .add-task-fixed {
-  position: fixed;
-  bottom: 0; left: 0; right: 0; z-index: 200;
-  background: white;
-  border-top: 1px solid var(--border);
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+  background: white; border-top: 1px solid var(--border);
   box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
-  padding: 10px 16px;
-  height: var(--bottom-h);
+  padding: 10px 16px; height: var(--bottom-h);
 }
 .add-task-inner {
   max-width: 1120px; margin: 0 auto;
@@ -264,27 +307,48 @@ body {
 .add-parent-input {
   flex: 1; font-size: 12px; padding: 6px 10px;
   border: 1px solid var(--border); border-radius: 4px;
-  outline: none; font-family: 'Noto Sans JP', sans-serif;
+  outline: none; font-family: 'Noto Sans JP', sans-serif; min-width: 0;
 }
 .add-parent-input:focus { border-color: var(--accent); }
 .add-parent-btn {
   background: var(--ink); color: white; border: none; border-radius: 4px;
   font-size: 11px; padding: 7px 14px; cursor: pointer; white-space: nowrap;
   font-family: 'Noto Sans JP', sans-serif; font-weight: 500;
-  transition: background 0.15s;
+  transition: background 0.15s; flex-shrink: 0;
 }
 .add-parent-btn:hover { background: var(--ink2); }
 
-/* ===== ANIMATIONS ===== */
 @keyframes slideUp {
   from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 640px) {
+  :root { --header-h: 48px; --bottom-h: 64px; }
+  .dash-header   { padding: 0 12px; gap: 8px; }
+  .header-title  { font-size: 12px; }
+  .header-date   { display: none; }
+  .hdr-btn       { font-size: 11px; padding: 4px 8px; }
+  .task-grid     { grid-template-columns: 1fr; gap: 8px; }
+  .main-content  { padding: 10px; }
+  .parent-name   { font-size: 13px; }
+  .parent-del, .child-del { opacity: 1; }
+  .effort-wrap   { display: none; }
+  .child-row     { padding: 6px 8px 6px 18px; }
+  .child-name    { font-size: 12px; }
+  .add-child-row { padding: 5px 8px 7px 18px; }
+  .add-child-input { font-size: 12px; padding: 5px 8px; }
+  .add-child-btn   { font-size: 12px; padding: 5px 10px; }
+  .add-task-fixed  { padding: 8px 12px; }
+  .add-label       { display: none; }
+  .add-parent-input { font-size: 13px; padding: 8px 10px; }
+  .add-parent-btn   { font-size: 12px; padding: 8px 12px; }
 }
 </style>
 </head>
 <body>
 
-<!-- Header -->
 <div class="dash-header">
   <div class="header-logo">E</div>
   <div class="header-title">EPRESS DESIGN AI リリースタスク</div>
@@ -295,148 +359,184 @@ body {
   </div>
 </div>
 
-<!-- Overall Progress Bar -->
 <div class="overall-bar-wrap">
   <div class="overall-bar-fill" id="overallBar" style="width:0%"></div>
   <div class="overall-bar-label" id="overallPct">0%</div>
 </div>
 
-<!-- Task Grid -->
 <div class="main-content">
   <div class="task-grid" id="taskGrid"></div>
 </div>
 
-<!-- Fixed Bottom: Add Parent -->
 <div class="add-task-fixed no-print">
   <div class="add-task-inner">
     <span class="add-label">親タスク：</span>
-    <input class="add-parent-input" id="addParentInput" placeholder="新しい親タスク名を入力..." onkeydown="if(event.key==='Enter') addParent()">
-    <button class="add-parent-btn" onclick="addParent()">＋ 親タスク追加</button>
+    <input class="add-parent-input" id="addParentInput" placeholder="新しい親タスク名を入力..."
+      onkeydown="if(event.key==='Enter') addParent()">
+    <button class="add-parent-btn" onclick="addParent()">＋ 追加</button>
   </div>
 </div>
 
 <script>
-function uid() { return '_' + Math.random().toString(36).slice(2,9); }
-function todayStr() {
-  const d = new Date();
-  return (d.getMonth()+1).toString().padStart(2,'0') + '/' + d.getDate().toString().padStart(2,'0');
+/* ===== STATUS ===== */
+const STATUSES = ['未着手','進行中','依頼中','完了'];
+const ST_STYLE = {
+  '未着手': { bg:'#f1f5f9', color:'#475569', border:'#cbd5e1' },
+  '進行中': { bg:'#eff6ff', color:'#2563eb', border:'#93c5fd' },
+  '依頼中': { bg:'#fef9c3', color:'#92400e', border:'#fcd34d' },
+  '完了':   { bg:'#f0fdf4', color:'#15803d', border:'#86efac' },
+};
+function applyStyle(el, status) {
+  const s = ST_STYLE[status] || ST_STYLE['未着手'];
+  el.style.background  = s.bg;
+  el.style.color       = s.color;
+  el.style.borderColor = s.border;
 }
-function save() { localStorage.setItem('epressTasksV3', JSON.stringify(tasks)); }
-function clearAll() {
-  if (confirm('全データをリセットしますか？')) { tasks = []; save(); render(); }
+function stOptions(cur) {
+  return STATUSES.map(s =>
+    `<option value="${s}"${s===cur?' selected':''}>${s}</option>`
+  ).join('');
 }
 
-let tasks = JSON.parse(localStorage.getItem('epressTasksV3') || 'null') || [
-  {
-    id: uid(), name: '商品設計', done: false, doneDate: null,
-    children: [
-      { id: uid(), name: 'SLA策定',       done: false, doneDate: null, effort: 14 },
-      { id: uid(), name: '収益構造確定',   done: false, doneDate: null, effort: 47 },
-      { id: uid(), name: '将来収益算出',   done: false, doneDate: null, effort: 21 },
-      { id: uid(), name: '業務フロー作成', done: false, doneDate: null, effort: 50 },
-    ]
-  },
-  {
-    id: uid(), name: '関係者調整', done: false, doneDate: null,
-    children: [
-      { id: uid(), name: '業務部（BPC社）',    done: false, doneDate: null, effort: 41 },
-      { id: uid(), name: '営業部',             done: false, doneDate: null, effort: 88 },
-      { id: uid(), name: '制作部',             done: false, doneDate: null, effort: 30 },
-      { id: uid(), name: 'サポート部',         done: false, doneDate: null, effort: 16 },
-      { id: uid(), name: '営業推進部（代理店展開）', done: false, doneDate: null, effort: 88 },
-    ]
-  },
-  {
-    id: uid(), name: '販売準備', done: false, doneDate: null,
-    children: [
-      { id: uid(), name: '契約書作成',           done: false, doneDate: null, effort: 60 },
-      { id: uid(), name: '規約作成',             done: false, doneDate: null, effort: 45 },
-      { id: uid(), name: 'イントラサイト資料掲載', done: false, doneDate: null, effort: 35 },
-      { id: uid(), name: '社員研修',             done: false, doneDate: null, effort: 70 },
-    ]
-  },
-  {
-    id: uid(), name: '企画承認', done: false, doneDate: null,
-    children: [
-      { id: uid(), name: 'SLA確定',        done: false, doneDate: null, effort: 55 },
-      { id: uid(), name: '将来収益光主計確認', done: false, doneDate: null, effort: 40 },
-      { id: uid(), name: 'プロジェクト審査', done: false, doneDate: null, effort: 80 },
-      { id: uid(), name: '投融資委員会',    done: false, doneDate: null, effort: 90 },
-      { id: uid(), name: 'リリース稟議',    done: false, doneDate: null, effort: 65 },
-    ]
-  },
-  {
-    id: uid(), name: '商品登録', done: false, doneDate: null,
-    children: [
-      { id: uid(), name: '商品名決定',             done: false, doneDate: null, effort: 86 },
-      { id: uid(), name: '収益認識基準確認',        done: false, doneDate: null, effort: 44 },
-      { id: uid(), name: '商品マスタ登録申請',      done: false, doneDate: null, effort: 42 },
-      { id: uid(), name: 'プロセスDB改修（社内システム）', done: false, doneDate: null, effort: 96 },
-    ]
-  },
-  {
-    id: uid(), name: '開発', done: false, doneDate: null,
-    children: [
-      { id: uid(), name: '要件定義',     done: false, doneDate: null, effort: 75 },
-      { id: uid(), name: '基本機能開発', done: false, doneDate: null, effort: 90 },
-      { id: uid(), name: '動画生成機能', done: false, doneDate: null, effort: 80 },
-      { id: uid(), name: '多言語対応',   done: false, doneDate: null, effort: 55 },
-      { id: uid(), name: '動作検証',     done: false, doneDate: null, effort: 60 },
-      { id: uid(), name: '機能リリース', done: false, doneDate: null, effort: 70 },
-    ]
-  },
+/* ===== UTILS ===== */
+function uid()      { return '_'+Math.random().toString(36).slice(2,9); }
+function todayStr() {
+  const d=new Date();
+  return (d.getMonth()+1).toString().padStart(2,'0')+'/'+d.getDate().toString().padStart(2,'0');
+}
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function save()    { localStorage.setItem('epressTasksV4',JSON.stringify(tasks)); }
+function clearAll(){ if(confirm('全データをリセットしますか？')){ tasks=[]; save(); render(); } }
+
+/* ===== FACTORIES ===== */
+function mkParent(name,children){
+  return {id:uid(),name,done:false,doneDate:null,status:'未着手',memo:'',_memoOpen:false,children};
+}
+function mkChild(name,effort){
+  return {id:uid(),name,done:false,doneDate:null,effort,status:'未着手',memo:'',_memoOpen:false};
+}
+
+/* ===== DATA ===== */
+let tasks = JSON.parse(localStorage.getItem('epressTasksV4')||'null') || [
+  mkParent('商品設計',[
+    mkChild('SLA策定',14), mkChild('収益構造確定',47),
+    mkChild('将来収益算出',21), mkChild('業務フロー作成',50),
+  ]),
+  mkParent('関係者調整',[
+    mkChild('業務部（BPC社）',41), mkChild('営業部',88), mkChild('制作部',30),
+    mkChild('サポート部',16), mkChild('営業推進部（代理店展開）',88),
+  ]),
+  mkParent('販売準備',[
+    mkChild('契約書作成',60), mkChild('規約作成',45),
+    mkChild('イントラサイト資料掲載',35), mkChild('社員研修',70),
+  ]),
+  mkParent('企画承認',[
+    mkChild('SLA確定',55), mkChild('将来収益光主計確認',40),
+    mkChild('プロジェクト審査',80), mkChild('投融資委員会',90), mkChild('リリース稟議',65),
+  ]),
+  mkParent('商品登録',[
+    mkChild('商品名決定',86), mkChild('収益認識基準確認',44),
+    mkChild('商品マスタ登録申請',42), mkChild('プロセスDB改修（社内システム）',96),
+  ]),
+  mkParent('開発',[
+    mkChild('要件定義',75), mkChild('基本機能開発',90), mkChild('動画生成機能',80),
+    mkChild('多言語対応',55), mkChild('動作検証',60), mkChild('機能リリース',70),
+  ]),
 ];
 
-// ===== RENDER =====
-function render() {
-  // Overall progress (weighted by effort)
-  let totalEff = 0, doneEff = 0;
-  tasks.forEach(p => {
-    if (p.children.length === 0) {
-      totalEff += 50; if (p.done) doneEff += 50;
-    } else {
-      p.children.forEach(c => { totalEff += c.effort; if (c.done) doneEff += c.effort; });
-    }
+/* ─── 旧データ補完 ─── */
+tasks.forEach(p=>{
+  if(!p.status)           p.status='未着手';
+  if(p.memo===undefined)  p.memo='';
+  if(!('_memoOpen' in p)) p._memoOpen=false;
+  p.children.forEach(c=>{
+    if(!c.status)           c.status='未着手';
+    if(c.memo===undefined)  c.memo='';
+    if(!('_memoOpen' in c)) c._memoOpen=false;
   });
-  const pct = totalEff === 0 ? 0 : Math.round(doneEff / totalEff * 100);
-  document.getElementById('overallBar').style.width = pct + '%';
-  document.getElementById('overallPct').textContent = pct + '%';
-  document.getElementById('headerDate').textContent =
-    new Date().toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' });
+});
 
-  // Grid
-  const grid = document.getElementById('taskGrid');
-  grid.innerHTML = '';
-  tasks.forEach(p => grid.appendChild(buildParentCard(p)));
+/* ===== PROGRESS =====
+   全タスク数 = 親 + 全子。完了 = done:true */
+function calcOverall(){
+  let total=0,done=0;
+  tasks.forEach(p=>{
+    total++; if(p.done) done++;
+    p.children.forEach(c=>{ total++; if(c.done) done++; });
+  });
+  return {total,done};
+}
+function isParentComplete(p){
+  return p.children.length===0 ? p.done : p.children.every(c=>c.done);
 }
 
-function buildParentCard(p) {
-  const doneCnt  = p.children.filter(c => c.done).length;
-  const totalCnt = p.children.length;
-  const totalEff = p.children.reduce((s, c) => s + c.effort, 0);
-  const doneEff  = p.children.filter(c => c.done).reduce((s, c) => s + c.effort, 0);
-  const barPct   = totalEff === 0 ? (p.done ? 100 : 0) : Math.round(doneEff / totalEff * 100);
+/* ===== RENDER ===== */
+function render(){
+  const {total,done} = calcOverall();
+  const pct = total===0 ? 0 : Math.round(done/total*100);
+  document.getElementById('overallBar').style.width = pct+'%';
+  document.getElementById('overallPct').textContent = done+'/'+total+' ('+pct+'%)';
+  document.getElementById('headerDate').textContent =
+    new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric'});
 
-  const card = document.createElement('div');
-  card.className = 'parent-card';
+  const grid = document.getElementById('taskGrid');
+  grid.innerHTML = '';
+  tasks.forEach(p=>grid.appendChild(buildCard(p)));
+  // selectスタイル適用
+  tasks.forEach(p=>{
+    const el=document.getElementById('pst-'+p.id);
+    if(el) applyStyle(el,p.status);
+    p.children.forEach(c=>{
+      const ce=document.getElementById('cst-'+c.id);
+      if(ce) applyStyle(ce,c.status);
+    });
+  });
+}
 
-  const cbId = 'pcb-' + p.id;
-  card.innerHTML = `
+function buildCard(p){
+  const doneCnt = p.children.filter(c=>c.done).length;
+  const totalCnt= p.children.length;
+  const barPct  = totalCnt===0 ? (p.done?100:0) : Math.round(doneCnt/totalCnt*100);
+  const complete= isParentComplete(p);
+  const cbId    = 'pcb-'+p.id;
+
+  const card=document.createElement('div');
+  card.className='parent-card';
+  card.innerHTML=`
     <div class="parent-header">
       <div class="cb-wrap">
-        <input type="checkbox" id="${cbId}" ${p.done ? 'checked' : ''} onchange="toggleParent('${p.id}')">
+        <input type="checkbox" id="${cbId}" ${complete?'checked':''} onchange="toggleParent('${p.id}')">
         <label class="cb-label" for="${cbId}"></label>
       </div>
-      <div class="parent-name ${p.done ? 'done-text' : ''}">${esc(p.name)}</div>
-      ${totalCnt > 0 ? `<div class="parent-stat">${doneCnt}/${totalCnt}</div>` : ''}
-      ${p.doneDate ? `<div class="parent-done-date">✓ ${p.doneDate}</div>` : ''}
+      <div class="parent-name ${complete?'done-text':''}">${esc(p.name)}</div>
+      ${totalCnt>0?`<div class="parent-stat">${doneCnt}/${totalCnt}</div>`:''}
+      ${p.doneDate?`<div class="parent-done-date">✓ ${p.doneDate}</div>`:''}
       <button class="parent-del no-print" onclick="deleteParent('${p.id}')">✕</button>
     </div>
     <div class="parent-bar-track">
       <div class="parent-bar-fill" style="width:${barPct}%"></div>
     </div>
+    <div class="parent-sub-row">
+      <span class="status-label-tag">ステータス</span>
+      <select class="status-select" id="pst-${p.id}" onchange="changeParentStatus('${p.id}',this.value)">
+        ${stOptions(p.status)}
+      </select>
+    </div>
     <div class="children-list">
-      ${p.children.map(c => buildChildRow(p.id, c)).join('')}
+      ${p.children.map(c=>buildChild(p.id,c)).join('')}
+    </div>
+    <div class="memo-wrap">
+      <div class="memo-toggle ${p._memoOpen?'open':''}" id="mt-${p.id}" onclick="toggleMemo('${p.id}')">
+        <span class="arr">${p._memoOpen?'▼':'▶'}</span> メモ${p.memo?'　<span style="color:#4f46e5;font-size:9px;">●</span>':''}
+      </div>
+      <div class="memo-box ${p._memoOpen?'open':''}" id="mb-${p.id}">
+        <textarea class="memo-textarea" id="mtx-${p.id}"
+          placeholder="このタスクのメモを入力..."
+          oninput="saveMemo('${p.id}')">${esc(p.memo)}</textarea>
+      </div>
     </div>
     <div class="add-child-row no-print">
       <input class="add-child-input" placeholder="子タスクを追加..."
@@ -447,104 +547,170 @@ function buildParentCard(p) {
   return card;
 }
 
-function buildChildRow(parentId, c) {
-  const cbId = 'ccb-' + c.id;
+function buildChild(parentId,c){
+  const cbId='ccb-'+c.id;
+  const hasMemo = c.memo && c.memo.trim()!=='';
   return `
     <div class="child-row">
       <div class="cb-wrap child-cb">
-        <input type="checkbox" id="${cbId}" ${c.done ? 'checked' : ''} onchange="toggleChild('${parentId}','${c.id}')">
+        <input type="checkbox" id="${cbId}" ${c.done?'checked':''} onchange="toggleChild('${parentId}','${c.id}')">
         <label class="cb-label" for="${cbId}"></label>
       </div>
-      <div class="child-name ${c.done ? 'done-text' : ''}">${esc(c.name)}</div>
-      <div class="effort-wrap">
-        <div class="effort-bar">
-          <div class="effort-fill" style="width:${c.effort}%"></div>
-        </div>
-        <div class="effort-num" title="クリックして工数編集" onclick="editEffort('${parentId}','${c.id}')">${c.effort}</div>
+      <div class="child-main">
+        <div class="child-name ${c.done?'done-text':''}">${esc(c.name)}</div>
+        <select class="child-status-select" id="cst-${c.id}"
+          onchange="changeChildStatus('${parentId}','${c.id}',this.value)">
+          ${stOptions(c.status)}
+        </select>
+        <textarea class="child-memo-textarea ${c._memoOpen?'open':''}" id="cmtx-${c.id}"
+          placeholder="メモ..."
+          oninput="saveChildMemo('${parentId}','${c.id}')">${esc(c.memo)}</textarea>
       </div>
-      <div class="child-done-date">${c.done && c.doneDate ? '✓ ' + c.doneDate : ''}</div>
+      <div class="child-right">
+        <div class="effort-wrap">
+          <div class="effort-bar"><div class="effort-fill" style="width:${c.effort}%"></div></div>
+          <div class="effort-num" title="クリックで編集" onclick="editEffort('${parentId}','${c.id}')">${c.effort}</div>
+        </div>
+        <div class="child-done-date">${c.done&&c.doneDate?'✓ '+c.doneDate:''}</div>
+        <button class="child-memo-btn no-print ${hasMemo||c._memoOpen?'active':''}"
+          title="メモを開閉" onclick="toggleChildMemo('${parentId}','${c.id}')">✏️</button>
+      </div>
       <button class="child-del no-print" onclick="deleteChild('${parentId}','${c.id}')">✕</button>
     </div>
   `;
 }
 
-function esc(s) {
-  return String(s)
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+/* ===== INTERACTIONS ===== */
+function addParent(){
+  const inp=document.getElementById('addParentInput');
+  const name=inp.value.trim(); if(!name) return;
+  tasks.push(mkParent(name,[]));
+  inp.value=''; save(); render();
+  setTimeout(()=>document.getElementById('addParentInput').focus(),0);
 }
 
-// ===== INTERACTIONS =====
-function addParent() {
-  const inp  = document.getElementById('addParentInput');
-  const name = inp.value.trim();
-  if (!name) return;
-  tasks.push({ id: uid(), name, done: false, doneDate: null, children: [] });
-  inp.value = '';
+function addChild(parentId){
+  const inp=document.getElementById('cinput-'+parentId);
+  const name=inp.value.trim(); if(!name) return;
+  const p=tasks.find(t=>t.id===parentId); if(!p) return;
+  p.children.push(mkChild(name,50));
   save(); render();
-  setTimeout(() => document.getElementById('addParentInput').focus(), 0);
+  setTimeout(()=>{ const el=document.getElementById('cinput-'+parentId); if(el) el.focus(); },0);
 }
 
-function addChild(parentId) {
-  const inp  = document.getElementById('cinput-' + parentId);
-  const name = inp.value.trim();
-  if (!name) return;
-  const p = tasks.find(t => t.id === parentId);
-  if (!p) return;
-  p.children.push({ id: uid(), name, done: false, doneDate: null, effort: 50 });
-  save(); render();
-  setTimeout(() => { const el = document.getElementById('cinput-' + parentId); if (el) el.focus(); }, 0);
-}
-
-function toggleParent(id) {
-  const p = tasks.find(t => t.id === id);
-  if (!p) return;
-  p.done = !p.done;
-  p.doneDate = p.done ? todayStr() : null;
-  if (p.done) p.children.forEach(c => { c.done = true; c.doneDate = c.doneDate || todayStr(); });
-  else        p.children.forEach(c => { c.done = false; c.doneDate = null; });
-  save(); render();
-}
-
-function toggleChild(parentId, childId) {
-  const p = tasks.find(t => t.id === parentId);
-  if (!p) return;
-  const c = p.children.find(c => c.id === childId);
-  if (!c) return;
-  c.done = !c.done;
-  c.doneDate = c.done ? todayStr() : null;
-  // Sync parent
-  if (p.children.length > 0 && p.children.every(c => c.done)) {
-    p.done = true; p.doneDate = todayStr();
+function toggleParent(id){
+  const p=tasks.find(t=>t.id===id); if(!p) return;
+  const complete=isParentComplete(p);
+  if(complete){
+    p.done=false; p.doneDate=null; p.status='未着手';
+    p.children.forEach(c=>{ c.done=false; c.doneDate=null; c.status='未着手'; });
   } else {
-    p.done = false; p.doneDate = null;
+    p.done=true; p.doneDate=todayStr(); p.status='完了';
+    p.children.forEach(c=>{ c.done=true; c.doneDate=c.doneDate||todayStr(); c.status='完了'; });
   }
   save(); render();
 }
 
-function editEffort(parentId, childId) {
-  const p = tasks.find(t => t.id === parentId);
-  if (!p) return;
-  const c = p.children.find(c => c.id === childId);
-  if (!c) return;
-  const val = prompt('工数 / 重みを入力してください (1〜100):', c.effort);
-  if (val === null) return;
-  const n = Math.max(1, Math.min(100, parseInt(val) || c.effort));
-  c.effort = n;
+function toggleChild(parentId,childId){
+  const p=tasks.find(t=>t.id===parentId); if(!p) return;
+  const c=p.children.find(c=>c.id===childId); if(!c) return;
+  c.done=!c.done;
+  c.doneDate=c.done?todayStr():null;
+  c.status  =c.done?'完了':'未着手';
+  if(p.children.length>0 && p.children.every(c=>c.done)){
+    p.done=true; p.doneDate=p.doneDate||todayStr(); p.status='完了';
+  } else {
+    p.done=false; p.doneDate=null;
+    if(p.status==='完了') p.status='進行中';
+  }
   save(); render();
 }
 
-function deleteParent(id) {
-  if (!confirm('この親タスクと全子タスクを削除しますか？')) return;
-  tasks = tasks.filter(t => t.id !== id);
+function changeParentStatus(id,val){
+  const p=tasks.find(t=>t.id===id); if(!p) return;
+  p.status=val;
+  if(val==='完了'){
+    p.done=true; p.doneDate=p.doneDate||todayStr();
+    p.children.forEach(c=>{ c.done=true; c.doneDate=c.doneDate||todayStr(); c.status='完了'; });
+  } else if(val==='未着手'){
+    p.done=false; p.doneDate=null;
+  }
   save(); render();
 }
 
-function deleteChild(parentId, childId) {
-  const p = tasks.find(t => t.id === parentId);
-  if (!p) return;
-  p.children = p.children.filter(c => c.id !== childId);
+function changeChildStatus(parentId,childId,val){
+  const p=tasks.find(t=>t.id===parentId); if(!p) return;
+  const c=p.children.find(c=>c.id===childId); if(!c) return;
+  c.status=val;
+  if(val==='完了'){ c.done=true; c.doneDate=c.doneDate||todayStr(); }
+  else            { c.done=false; c.doneDate=null; }
+  if(p.children.every(c=>c.done)){
+    p.done=true; p.doneDate=p.doneDate||todayStr(); p.status='完了';
+  } else {
+    p.done=false; p.doneDate=null;
+    if(p.status==='完了') p.status='進行中';
+  }
   save(); render();
+}
+
+/* メモ開閉（親）*/
+function toggleMemo(parentId){
+  const p=tasks.find(t=>t.id===parentId); if(!p) return;
+  p._memoOpen=!p._memoOpen;
+  const mt=document.getElementById('mt-'+parentId);
+  const mb=document.getElementById('mb-'+parentId);
+  if(p._memoOpen){ mb.classList.add('open'); mt.classList.add('open'); }
+  else           { mb.classList.remove('open'); mt.classList.remove('open'); }
+  mt.querySelector('.arr').textContent=p._memoOpen?'▼':'▶';
+}
+
+function saveMemo(parentId){
+  const p=tasks.find(t=>t.id===parentId); if(!p) return;
+  const el=document.getElementById('mtx-'+parentId); if(!el) return;
+  p.memo=el.value; save();
+  const mt=document.getElementById('mt-'+parentId);
+  if(mt) mt.innerHTML=`<span class="arr">${p._memoOpen?'▼':'▶'}</span> メモ${p.memo?'　<span style="color:#4f46e5;font-size:9px;">●</span>':''}`;
+}
+
+/* メモ開閉（子）*/
+function toggleChildMemo(parentId,childId){
+  const p=tasks.find(t=>t.id===parentId); if(!p) return;
+  const c=p.children.find(c=>c.id===childId); if(!c) return;
+  c._memoOpen=!c._memoOpen;
+  const el=document.getElementById('cmtx-'+childId); if(!el) return;
+  if(c._memoOpen) el.classList.add('open');
+  else            el.classList.remove('open');
+  const row=el.closest('.child-row');
+  const btn=row?.querySelector('.child-memo-btn');
+  if(btn) btn.classList.toggle('active', c._memoOpen || (c.memo&&c.memo.trim()!==''));
+}
+
+function saveChildMemo(parentId,childId){
+  const p=tasks.find(t=>t.id===parentId); if(!p) return;
+  const c=p.children.find(c=>c.id===childId); if(!c) return;
+  const el=document.getElementById('cmtx-'+childId); if(!el) return;
+  c.memo=el.value; save();
+  const btn=el.closest('.child-row')?.querySelector('.child-memo-btn');
+  if(btn) btn.classList.toggle('active', c.memo.trim()!=='' || c._memoOpen);
+}
+
+function editEffort(parentId,childId){
+  const p=tasks.find(t=>t.id===parentId); if(!p) return;
+  const c=p.children.find(c=>c.id===childId); if(!c) return;
+  const val=prompt('工数 / 重みを入力してください (1〜100):',c.effort);
+  if(val===null) return;
+  c.effort=Math.max(1,Math.min(100,parseInt(val)||c.effort));
+  save(); render();
+}
+
+function deleteParent(id){
+  if(!confirm('この親タスクと全子タスクを削除しますか？')) return;
+  tasks=tasks.filter(t=>t.id!==id); save(); render();
+}
+
+function deleteChild(parentId,childId){
+  const p=tasks.find(t=>t.id===parentId); if(!p) return;
+  p.children=p.children.filter(c=>c.id!==childId); save(); render();
 }
 
 render();
