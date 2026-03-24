@@ -480,7 +480,8 @@ function mkChild(name,effort){
 }
 
 /* ===== DATA ===== */
-let tasks = JSON.parse(localStorage.getItem('epressTasksV4')||'null') || [
+let tasks = (JSON.parse(localStorage.getItem('epressTasksV4')||'null') || []);
+if(tasks.length===0) tasks = [
   mkParent('商品設計',[
     mkChild('SLA策定',14), mkChild('収益構造確定',47),
     mkChild('将来収益算出',21), mkChild('業務フロー作成',50),
@@ -490,8 +491,9 @@ let tasks = JSON.parse(localStorage.getItem('epressTasksV4')||'null') || [
     mkChild('サポート部',16), mkChild('営業推進部（代理店展開）',88),
   ]),
   mkParent('販売準備',[
-    mkChild('契約書作成',60), mkChild('規約作成',45),
-    mkChild('イントラサイト資料掲載',35), mkChild('社員研修',70),
+    mkChild('契約書作成',50), mkChild('規約作成',50),
+    mkChild('イントラサイト資料掲載',50), mkChild('社内マニュアル作成',50),
+    mkChild('社員研修',50), mkChild('営業資料作成',50), mkChild('研修実施',50),
   ]),
   mkParent('企画承認',[
     mkChild('SLA確定',55), mkChild('将来収益光主計確認',40),
