@@ -4,585 +4,546 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EPRESS DESIGN AI リリースタスク</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=DM+Mono:wght@400;500&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  :root {
-    --ink: #1a1a2e;
-    --ink2: #2d2d4e;
-    --mist: #f0f2f8;
-    --border: #d4d8ee;
-    --accent: #4f46e5;
-    --accent2: #7c3aed;
-    --done: #059669;
-    --warn: #d97706;
-    --danger: #dc2626;
-    --text: #374151;
-    --sub: #6b7280;
-    --white: #ffffff;
-    --card: #ffffff;
-    --shadow: 0 1px 4px rgba(79,70,229,0.08);
-    --radius: 6px;
-    --header-h: 48px;
-    --adder-h: 58px;
-  }
+:root {
+  --ink:    #1e3a5f;
+  --ink2:   #2d5282;
+  --accent: #4f46e5;
+  --done:   #059669;
+  --danger: #dc2626;
+  --border: #d1d5db;
+  --text:   #374151;
+  --sub:    #6b7280;
+  --mist:   #f8fafc;
+  --white:  #fff;
+  --header-h: 42px;
+  --overall-h: 30px;
+  --bottom-h: 58px;
+}
 
-  body {
-    font-family: 'Noto Sans JP', sans-serif;
-    background: #e8eaf6;
-    color: var(--text);
-    min-height: 100vh;
-    padding-top: calc(var(--header-h) + 16px);
-    padding-bottom: calc(var(--adder-h) + 16px);
-  }
+body {
+  font-family: 'Noto Sans JP', sans-serif;
+  background: #eef2f7;
+  color: var(--text);
+  min-height: 100vh;
+  padding-top: calc(var(--header-h) + var(--overall-h));
+  padding-bottom: calc(var(--bottom-h) + 16px);
+}
 
-  /* ===== PRINT ===== */
-  @media print {
-    @page { size: A4 landscape; margin: 10mm; }
-    body { background: white; padding: 0; }
-    .no-print { display: none !important; }
-    .task-card { break-inside: avoid; }
-    .subtask-list { display: flex !important; }
-    .dash-header { position: static !important; box-shadow: none; }
-    .add-task-fixed { display: none !important; }
-  }
+/* ===== PRINT ===== */
+@media print {
+  @page { size: A4 landscape; margin: 8mm; }
+  body { background: white; padding: 0; }
+  .no-print { display: none !important; }
+  .dash-header, .overall-bar-wrap { position: static !important; box-shadow: none; }
+  .add-task-fixed { display: none !important; }
+  .parent-card { break-inside: avoid; border: 1.5px solid #93c5fd !important; }
+  .child-row { break-inside: avoid; }
+}
 
-  /* ===== HEADER (sticky top) ===== */
-  .dash-header {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 100;
-    background: linear-gradient(135deg, var(--ink) 0%, var(--ink2) 60%, #3730a3 100%);
-    color: white;
-    height: var(--header-h);
-    padding: 0 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.2);
-  }
+/* ===== HEADER ===== */
+.dash-header {
+  position: fixed;
+  top: 0; left: 0; right: 0; z-index: 200;
+  background: linear-gradient(90deg, #1e3a5f 0%, #2d5282 100%);
+  color: white;
+  height: var(--header-h);
+  display: flex; align-items: center;
+  padding: 0 18px; gap: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+.header-logo {
+  width: 24px; height: 24px;
+  background: #4f46e5; border-radius: 5px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; flex-shrink: 0;
+}
+.header-title { font-size: 14px; font-weight: 500; letter-spacing: 0.03em; flex: 1; }
+.header-right { display: flex; align-items: center; gap: 8px; }
+.header-date { font-size: 9px; opacity: 0.5; font-family: 'DM Mono', monospace; }
+.hdr-btn {
+  font-size: 10px; padding: 3px 9px; border-radius: 4px; cursor: pointer;
+  font-family: 'Noto Sans JP', sans-serif;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.85);
+  background: rgba(255,255,255,0.1);
+  transition: background 0.15s;
+}
+.hdr-btn:hover { background: rgba(255,255,255,0.22); }
 
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-shrink: 0;
-  }
+/* ===== OVERALL PROGRESS BAR ===== */
+.overall-bar-wrap {
+  position: fixed;
+  top: var(--header-h); left: 0; right: 0; z-index: 199;
+  height: var(--overall-h);
+  background: #f0fdf4;
+  border-bottom: 1px solid #bbf7d0;
+}
+.overall-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #86efac, #4ade80);
+  transition: width 0.5s ease;
+}
+.overall-bar-label {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 12px; font-weight: 600;
+  color: #15803d;
+  font-family: 'DM Mono', monospace;
+  pointer-events: none;
+}
 
-  .logo-mark {
-    width: 26px; height: 26px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border-radius: 6px;
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Playfair Display', serif;
-    font-size: 13px;
-    font-weight: 700;
-    box-shadow: 0 2px 8px rgba(99,102,241,0.5);
-    flex-shrink: 0;
-  }
+/* ===== MAIN ===== */
+.main-content {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 14px 14px;
+}
 
-  .header-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    white-space: nowrap;
-  }
+/* ===== TASK GRID (2 columns) ===== */
+.task-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  align-items: start;
+}
 
-  .header-center {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-  }
+/* ===== PARENT CARD ===== */
+.parent-card {
+  background: var(--white);
+  border: 1.5px solid #93c5fd;
+  border-radius: 6px;
+  overflow: hidden;
+  animation: slideUp 0.2s ease;
+}
 
-  /* Progress block – half height */
-  .overall-progress-block {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: rgba(255,255,255,0.08);
-    border-radius: 6px;
-    padding: 4px 12px;
-  }
-  .overall-pct {
-    font-family: 'DM Mono', monospace;
-    font-size: 18px;
-    font-weight: 500;
-    line-height: 1;
-  }
-  .overall-pct span { font-size: 11px; opacity: 0.7; }
-  .overall-bar-wrap {
-    width: 100px;
-    height: 3px;
-    background: rgba(255,255,255,0.2);
-    border-radius: 2px;
-    overflow: hidden;
-    margin-top: 3px;
-  }
-  .overall-bar-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #818cf8, #a78bfa);
-    border-radius: 2px;
-    transition: width 0.5s ease;
-  }
-  .overall-label { font-size: 8px; opacity: 0.6; letter-spacing: 0.08em; margin-top: 2px; }
+.parent-header {
+  display: flex; align-items: center; gap: 7px;
+  padding: 8px 10px;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+}
 
-  .stat-pills { display: flex; gap: 6px; }
-  .stat-pill {
-    background: rgba(255,255,255,0.1);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 20px;
-    padding: 3px 8px;
-    font-size: 9px;
-    display: flex; align-items: center; gap: 4px;
-  }
-  .stat-pill .dot { width: 5px; height: 5px; border-radius: 50%; }
-  .stat-pill .num { font-family: 'DM Mono', monospace; font-weight: 500; font-size: 11px; }
+/* Checkboxes shared */
+.cb-wrap input[type="checkbox"] { display: none; }
+.cb-label {
+  display: flex; align-items: center; justify-content: center;
+  width: 15px; height: 15px;
+  border: 2px solid #9ca3af;
+  border-radius: 3px;
+  cursor: pointer; background: white;
+  transition: all 0.15s; flex-shrink: 0;
+}
+.cb-wrap input:checked + .cb-label { background: var(--done); border-color: var(--done); }
+.cb-wrap input:checked + .cb-label::after {
+  content: '✓'; color: white; font-size: 9px; font-weight: 700; line-height: 1;
+}
 
-  .header-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-  .header-date {
-    font-size: 9px; opacity: 0.5;
-    font-family: 'DM Mono', monospace;
-    letter-spacing: 0.05em;
-  }
-  .hdr-btn {
-    border-radius: 4px;
-    padding: 4px 10px;
-    font-size: 10px;
-    cursor: pointer;
-    font-family: 'Noto Sans JP', sans-serif;
-    border: none;
-    transition: background 0.2s;
-  }
-  .hdr-btn.print {
-    background: rgba(255,255,255,0.15);
-    border: 1px solid rgba(255,255,255,0.25);
-    color: white;
-  }
-  .hdr-btn.print:hover { background: rgba(255,255,255,0.25); }
-  .hdr-btn.reset {
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.15);
-    color: rgba(255,255,255,0.65);
-  }
-  .hdr-btn.reset:hover { background: rgba(220,38,38,0.25); color: white; }
+.parent-name {
+  flex: 1; font-size: 12px; font-weight: 700; color: var(--ink);
+}
+.parent-name.done-text { text-decoration: line-through; color: var(--sub); }
 
-  /* ===== MAIN ===== */
-  .main-content {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 16px 20px;
-  }
+.parent-stat {
+  font-size: 11px; font-weight: 700;
+  color: var(--danger); font-family: 'DM Mono', monospace; flex-shrink: 0;
+}
 
-  .task-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
+.parent-done-date {
+  font-size: 9px; font-family: 'DM Mono', monospace;
+  color: var(--done); white-space: nowrap; flex-shrink: 0;
+}
 
-  .empty-state {
-    text-align: center;
-    padding: 48px 20px;
-    color: var(--sub);
-    font-size: 13px;
-  }
+.parent-del {
+  background: none; border: none; cursor: pointer;
+  color: #d1d5db; font-size: 11px; opacity: 0; padding: 1px 3px;
+  transition: opacity 0.15s; flex-shrink: 0;
+}
+.parent-card:hover .parent-del { opacity: 1; }
+.parent-del:hover { color: var(--danger); }
 
-  /* ===== TASK CARD ===== */
-  .task-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-    box-shadow: var(--shadow);
-    transition: box-shadow 0.2s;
-    animation: slideUp 0.2s ease;
-  }
-  .task-card:hover { box-shadow: 0 3px 12px rgba(79,70,229,0.12); }
-  .task-card.done { border-left: 3px solid var(--done); opacity: 0.72; }
+/* Parent progress bar */
+.parent-bar-track { height: 4px; background: #e5e7eb; flex-shrink: 0; }
+.parent-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #818cf8, #a78bfa);
+  transition: width 0.4s ease;
+}
 
-  .task-main {
-    padding: 10px 12px;
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-  }
+/* ===== CHILD ROWS ===== */
+.children-list { padding: 2px 0; }
 
-  .cb-wrap { flex-shrink: 0; margin-top: 2px; }
-  .cb-wrap input[type="checkbox"] { display: none; }
-  .cb-label {
-    display: flex; align-items: center; justify-content: center;
-    width: 16px; height: 16px;
-    border: 2px solid var(--border);
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.2s;
-    background: white;
-  }
-  .cb-wrap input:checked + .cb-label { background: var(--done); border-color: var(--done); }
-  .cb-wrap input:checked + .cb-label::after {
-    content: '✓'; color: white; font-size: 10px; font-weight: 700; line-height: 1;
-  }
+.child-row {
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 10px 4px 26px;
+  transition: background 0.1s;
+}
+.child-row:hover { background: #f8fafc; }
 
-  .task-info { flex: 1; min-width: 0; }
-  .task-name {
-    font-size: 13px; font-weight: 500; color: var(--ink); line-height: 1.4; word-break: break-all;
-  }
-  .task-name.done-text { text-decoration: line-through; color: var(--sub); }
+.child-cb .cb-label { width: 13px; height: 13px; border-radius: 2px; }
+.child-cb input:checked + .cb-label::after { font-size: 8px; }
 
-  .task-meta {
-    display: flex; align-items: center; gap: 6px; margin-top: 4px; flex-wrap: wrap;
-  }
-  .check-date {
-    font-size: 9px; font-family: 'DM Mono', monospace; color: var(--done);
-    background: #ecfdf5; padding: 1px 5px; border-radius: 3px;
-  }
-  .priority-badge {
-    font-size: 8px; font-weight: 700; letter-spacing: 0.05em;
-    padding: 1px 5px; border-radius: 3px; text-transform: uppercase;
-  }
-  .p-high { background: #fee2e2; color: var(--danger); }
-  .p-mid  { background: #fef3c7; color: var(--warn); }
-  .p-low  { background: #e0f2fe; color: #0369a1; }
+.child-name {
+  flex: 1; font-size: 11px; color: var(--text);
+  min-width: 0; word-break: break-all; line-height: 1.3;
+}
+.child-name.done-text { text-decoration: line-through; color: var(--sub); }
 
-  .task-actions { display: flex; align-items: center; flex-shrink: 0; }
-  .del-btn {
-    background: none; border: none; cursor: pointer;
-    color: #d1d5db; font-size: 12px; padding: 2px 4px;
-    border-radius: 3px; opacity: 0; transition: opacity 0.2s, color 0.2s;
-  }
-  .task-card:hover .del-btn { opacity: 1; }
-  .del-btn:hover { color: var(--danger); }
+/* Effort bar + number */
+.effort-wrap {
+  display: flex; align-items: center; gap: 3px;
+  flex-shrink: 0; width: 72px;
+}
+.effort-bar {
+  flex: 1; height: 9px; background: #fee2e2; border-radius: 2px; overflow: hidden;
+}
+.effort-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #fca5a5, #ef4444);
+  border-radius: 2px;
+}
+.effort-num {
+  font-size: 10px; font-family: 'DM Mono', monospace;
+  color: #ef4444; min-width: 20px; text-align: right;
+  cursor: pointer; user-select: none;
+}
+.effort-num:hover { color: var(--accent); text-decoration: underline; }
 
-  .task-progress-mini { display: flex; align-items: center; gap: 5px; margin-top: 5px; }
-  .mini-bar { flex: 1; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
-  .mini-bar-fill { height: 100%; border-radius: 2px; transition: width 0.3s ease; }
-  .mini-pct { font-size: 9px; font-family: 'DM Mono', monospace; color: var(--sub); min-width: 26px; text-align: right; }
+/* Completion date */
+.child-done-date {
+  font-size: 9px; font-family: 'DM Mono', monospace;
+  color: var(--done); white-space: nowrap; flex-shrink: 0;
+  min-width: 38px; text-align: right;
+}
 
-  .toggle-sub {
-    background: none; border: none; cursor: pointer; color: var(--sub);
-    font-size: 10px; padding: 2px 4px; border-radius: 3px;
-    display: flex; align-items: center; gap: 3px;
-    transition: background 0.15s; white-space: nowrap;
-  }
-  .toggle-sub:hover { background: var(--mist); }
-  .toggle-sub .arrow { transition: transform 0.2s; display: inline-block; font-size: 8px; }
-  .toggle-sub.open .arrow { transform: rotate(90deg); }
+.child-del {
+  background: none; border: none; cursor: pointer;
+  color: #d1d5db; font-size: 10px; opacity: 0; padding: 1px 2px;
+  transition: opacity 0.15s; flex-shrink: 0;
+}
+.child-row:hover .child-del { opacity: 1; }
+.child-del:hover { color: var(--danger); }
 
-  /* ===== SUBTASKS ===== */
-  .subtask-list {
-    border-top: 1px solid var(--border);
-    background: #f9fafb;
-    padding: 6px 8px;
-    display: none; flex-direction: column; gap: 4px;
-  }
-  .subtask-list.open { display: flex; }
+/* Add child inline form */
+.add-child-row {
+  display: flex; align-items: center; gap: 4px;
+  padding: 4px 10px 6px 26px;
+  border-top: 1px dashed #e5e7eb;
+}
+.add-child-input {
+  flex: 1; font-size: 10px; padding: 3px 6px;
+  border: 1px solid var(--border); border-radius: 3px;
+  outline: none; font-family: 'Noto Sans JP', sans-serif; background: white;
+}
+.add-child-input:focus { border-color: var(--accent); }
+.add-child-btn {
+  background: var(--accent); color: white; border: none; border-radius: 3px;
+  font-size: 10px; padding: 3px 8px; cursor: pointer; white-space: nowrap;
+  font-family: 'Noto Sans JP', sans-serif;
+}
 
-  .subtask-item {
-    display: flex; align-items: center; gap: 7px;
-    padding: 3px 4px; border-radius: 4px; transition: background 0.15s;
-  }
-  .subtask-item:hover { background: var(--mist); }
-  .subtask-item .cb-label { width: 13px; height: 13px; border-radius: 3px; }
-  .subtask-item .cb-wrap input:checked + .cb-label::after { font-size: 8px; }
-  .subtask-name { font-size: 11px; color: var(--text); flex: 1; min-width: 0; word-break: break-all; }
-  .subtask-name.done-text { text-decoration: line-through; color: var(--sub); }
-  .sub-date { font-size: 9px; font-family: 'DM Mono', monospace; color: var(--done); white-space: nowrap; }
-  .sub-del {
-    background: none; border: none; cursor: pointer;
-    color: #d1d5db; font-size: 10px; opacity: 0; transition: opacity 0.15s; padding: 2px;
-  }
-  .subtask-item:hover .sub-del { opacity: 1; }
-  .sub-del:hover { color: var(--danger); }
+/* ===== FIXED BOTTOM BAR ===== */
+.add-task-fixed {
+  position: fixed;
+  bottom: 0; left: 0; right: 0; z-index: 200;
+  background: white;
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+  padding: 10px 16px;
+  height: var(--bottom-h);
+}
+.add-task-inner {
+  max-width: 1120px; margin: 0 auto;
+  display: flex; gap: 8px; align-items: center;
+}
+.add-label { font-size: 11px; color: var(--sub); white-space: nowrap; flex-shrink: 0; }
+.add-parent-input {
+  flex: 1; font-size: 12px; padding: 6px 10px;
+  border: 1px solid var(--border); border-radius: 4px;
+  outline: none; font-family: 'Noto Sans JP', sans-serif;
+}
+.add-parent-input:focus { border-color: var(--accent); }
+.add-parent-btn {
+  background: var(--ink); color: white; border: none; border-radius: 4px;
+  font-size: 11px; padding: 7px 14px; cursor: pointer; white-space: nowrap;
+  font-family: 'Noto Sans JP', sans-serif; font-weight: 500;
+  transition: background 0.15s;
+}
+.add-parent-btn:hover { background: var(--ink2); }
 
-  .add-sub-form { display: flex; gap: 4px; margin-top: 4px; }
-  .add-sub-input {
-    flex: 1; font-size: 10px; padding: 3px 6px;
-    border: 1px solid var(--border); border-radius: 4px;
-    outline: none; font-family: 'Noto Sans JP', sans-serif; background: white;
-  }
-  .add-sub-input:focus { border-color: var(--accent); }
-  .add-sub-btn {
-    background: var(--accent); color: white; border: none; border-radius: 4px;
-    font-size: 10px; padding: 3px 8px; cursor: pointer; font-family: 'Noto Sans JP', sans-serif;
-  }
-
-  /* ===== FIXED BOTTOM ADD TASK BAR ===== */
-  .add-task-fixed {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    z-index: 100;
-    background: white;
-    border-top: 1px solid var(--border);
-    box-shadow: 0 -2px 12px rgba(79,70,229,0.1);
-    padding: 10px 20px;
-    height: var(--adder-h);
-  }
-  .add-task-inner {
-    max-width: 800px;
-    margin: 0 auto;
-    display: flex;
-    gap: 8px;
-    align-items: center;
-  }
-  .add-task-input {
-    flex: 1; font-size: 12px; padding: 7px 10px;
-    border: 1px solid var(--border); border-radius: 4px;
-    outline: none; font-family: 'Noto Sans JP', sans-serif; background: white;
-  }
-  .add-task-input:focus { border-color: var(--accent); }
-  .add-task-priority {
-    font-size: 11px; padding: 7px 8px;
-    border: 1px solid var(--border); border-radius: 4px;
-    background: white; cursor: pointer; outline: none;
-    font-family: 'Noto Sans JP', sans-serif;
-  }
-  .add-task-btn {
-    background: var(--accent); color: white; border: none; border-radius: 4px;
-    font-size: 12px; padding: 7px 14px; cursor: pointer;
-    font-family: 'Noto Sans JP', sans-serif; font-weight: 500; white-space: nowrap;
-  }
-  .add-task-btn:hover { background: #4338ca; }
-
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateY(6px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
+/* ===== ANIMATIONS ===== */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 </style>
 </head>
 <body>
 
-<!-- Sticky Header -->
+<!-- Header -->
 <div class="dash-header">
-  <div class="header-left">
-    <div class="logo-mark">E</div>
-    <div class="header-title">EPRESS DESIGN AI リリースタスク</div>
-  </div>
-
-  <div class="header-center">
-    <div class="overall-progress-block">
-      <div>
-        <div class="overall-pct" id="overallPct">0<span>%</span></div>
-        <div class="overall-bar-wrap"><div class="overall-bar-fill" id="overallBar" style="width:0%"></div></div>
-        <div class="overall-label">OVERALL PROGRESS</div>
-      </div>
-    </div>
-    <div class="stat-pills">
-      <div class="stat-pill">
-        <div class="dot" style="background:#6366f1"></div>
-        <span>総数</span><span class="num" id="statTotal">0</span>
-      </div>
-      <div class="stat-pill">
-        <div class="dot" style="background:#059669"></div>
-        <span>完了</span><span class="num" id="statDone">0</span>
-      </div>
-      <div class="stat-pill">
-        <div class="dot" style="background:#6b7280"></div>
-        <span>残り</span><span class="num" id="statRemain">0</span>
-      </div>
-    </div>
-  </div>
-
+  <div class="header-logo">E</div>
+  <div class="header-title">EPRESS DESIGN AI リリースタスク</div>
   <div class="header-right no-print">
     <div class="header-date" id="headerDate"></div>
-    <button class="hdr-btn reset" onclick="clearAll()">リセット</button>
-    <button class="hdr-btn print" onclick="window.print()">🖨 印刷</button>
+    <button class="hdr-btn" onclick="clearAll()">リセット</button>
+    <button class="hdr-btn" onclick="window.print()">🖨 印刷</button>
   </div>
 </div>
 
-<!-- Task List -->
-<div class="main-content">
-  <div class="task-list" id="taskList"></div>
+<!-- Overall Progress Bar -->
+<div class="overall-bar-wrap">
+  <div class="overall-bar-fill" id="overallBar" style="width:0%"></div>
+  <div class="overall-bar-label" id="overallPct">0%</div>
 </div>
 
-<!-- Fixed Bottom Add Task -->
+<!-- Task Grid -->
+<div class="main-content">
+  <div class="task-grid" id="taskGrid"></div>
+</div>
+
+<!-- Fixed Bottom: Add Parent -->
 <div class="add-task-fixed no-print">
   <div class="add-task-inner">
-    <input class="add-task-input" placeholder="タスクを追加..." id="addInput" onkeydown="handleAddKey(event)">
-    <select class="add-task-priority" id="addPrio">
-      <option value="high">高優先</option>
-      <option value="mid" selected>中優先</option>
-      <option value="low">低優先</option>
-    </select>
-    <button class="add-task-btn" onclick="addTask()">＋ タスク追加</button>
+    <span class="add-label">親タスク：</span>
+    <input class="add-parent-input" id="addParentInput" placeholder="新しい親タスク名を入力..." onkeydown="if(event.key==='Enter') addParent()">
+    <button class="add-parent-btn" onclick="addParent()">＋ 親タスク追加</button>
   </div>
 </div>
 
 <script>
-function t() { return '_' + Math.random().toString(36).slice(2,9); }
-function today() { return new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'2-digit',day:'2-digit'}).replace(/\//g,'-'); }
-function save() { localStorage.setItem('epressTasks', JSON.stringify(tasks)); }
-function clearAll() { if(confirm('全データをリセットしますか？')) { tasks=[]; save(); render(); } }
-
-let tasks = JSON.parse(localStorage.getItem('epressTasks') || 'null') || [
-  { id:t(), name:'ステークホルダーへのヒアリング', priority:'high', done:false, doneDate:null,
-    subtasks:[
-      { id:t(), name:'部長へのヒアリング', done:false, doneDate:null },
-      { id:t(), name:'現場担当者ヒアリング', done:false, doneDate:null },
-    ], subOpen:true },
-  { id:t(), name:'KPI指標の策定', priority:'mid', done:false, doneDate:null, subtasks:[], subOpen:false },
-  { id:t(), name:'システム要件定義書の作成', priority:'high', done:false, doneDate:null,
-    subtasks:[
-      { id:t(), name:'機能要件リストアップ', done:true, doneDate:today() },
-      { id:t(), name:'非機能要件の確認', done:false, doneDate:null },
-      { id:t(), name:'レビュー実施', done:false, doneDate:null },
-    ], subOpen:true },
-];
-
-function render() {
-  const total = tasks.length;
-  const allSubs = tasks.flatMap(tk => tk.subtasks);
-  const totalItems = total + allSubs.length;
-  const doneItems = tasks.filter(tk=>tk.done).length + allSubs.filter(s=>s.done).length;
-  const pct = totalItems === 0 ? 0 : Math.round(doneItems / totalItems * 100);
-
-  document.getElementById('overallPct').innerHTML = pct + '<span>%</span>';
-  document.getElementById('overallBar').style.width = pct + '%';
-  document.getElementById('statTotal').textContent = total;
-  document.getElementById('statDone').textContent = tasks.filter(tk=>tk.done).length;
-  document.getElementById('statRemain').textContent = tasks.filter(tk=>!tk.done).length;
-  document.getElementById('headerDate').textContent = new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric'});
-
-  const list = document.getElementById('taskList');
-  list.innerHTML = '';
-  if (tasks.length === 0) {
-    list.innerHTML = '<div class="empty-state">タスクがありません。下のバーからタスクを追加してください。</div>';
-    return;
-  }
-  tasks.forEach(task => list.appendChild(createTaskEl(task)));
+function uid() { return '_' + Math.random().toString(36).slice(2,9); }
+function todayStr() {
+  const d = new Date();
+  return (d.getMonth()+1).toString().padStart(2,'0') + '/' + d.getDate().toString().padStart(2,'0');
+}
+function save() { localStorage.setItem('epressTasksV3', JSON.stringify(tasks)); }
+function clearAll() {
+  if (confirm('全データをリセットしますか？')) { tasks = []; save(); render(); }
 }
 
-function createTaskEl(task) {
+let tasks = JSON.parse(localStorage.getItem('epressTasksV3') || 'null') || [
+  {
+    id: uid(), name: '商品設計', done: false, doneDate: null,
+    children: [
+      { id: uid(), name: 'SLA策定',       done: false, doneDate: null, effort: 14 },
+      { id: uid(), name: '収益構造確定',   done: false, doneDate: null, effort: 47 },
+      { id: uid(), name: '将来収益算出',   done: false, doneDate: null, effort: 21 },
+      { id: uid(), name: '業務フロー作成', done: false, doneDate: null, effort: 50 },
+    ]
+  },
+  {
+    id: uid(), name: '関係者調整', done: false, doneDate: null,
+    children: [
+      { id: uid(), name: '業務部（BPC社）',    done: false, doneDate: null, effort: 41 },
+      { id: uid(), name: '営業部',             done: false, doneDate: null, effort: 88 },
+      { id: uid(), name: '制作部',             done: false, doneDate: null, effort: 30 },
+      { id: uid(), name: 'サポート部',         done: false, doneDate: null, effort: 16 },
+      { id: uid(), name: '営業推進部（代理店展開）', done: false, doneDate: null, effort: 88 },
+    ]
+  },
+  {
+    id: uid(), name: '販売準備', done: false, doneDate: null,
+    children: [
+      { id: uid(), name: '契約書作成',           done: false, doneDate: null, effort: 60 },
+      { id: uid(), name: '規約作成',             done: false, doneDate: null, effort: 45 },
+      { id: uid(), name: 'イントラサイト資料掲載', done: false, doneDate: null, effort: 35 },
+      { id: uid(), name: '社員研修',             done: false, doneDate: null, effort: 70 },
+    ]
+  },
+  {
+    id: uid(), name: '企画承認', done: false, doneDate: null,
+    children: [
+      { id: uid(), name: 'SLA確定',        done: false, doneDate: null, effort: 55 },
+      { id: uid(), name: '将来収益光主計確認', done: false, doneDate: null, effort: 40 },
+      { id: uid(), name: 'プロジェクト審査', done: false, doneDate: null, effort: 80 },
+      { id: uid(), name: '投融資委員会',    done: false, doneDate: null, effort: 90 },
+      { id: uid(), name: 'リリース稟議',    done: false, doneDate: null, effort: 65 },
+    ]
+  },
+  {
+    id: uid(), name: '商品登録', done: false, doneDate: null,
+    children: [
+      { id: uid(), name: '商品名決定',             done: false, doneDate: null, effort: 86 },
+      { id: uid(), name: '収益認識基準確認',        done: false, doneDate: null, effort: 44 },
+      { id: uid(), name: '商品マスタ登録申請',      done: false, doneDate: null, effort: 42 },
+      { id: uid(), name: 'プロセスDB改修（社内システム）', done: false, doneDate: null, effort: 96 },
+    ]
+  },
+  {
+    id: uid(), name: '開発', done: false, doneDate: null,
+    children: [
+      { id: uid(), name: '要件定義',     done: false, doneDate: null, effort: 75 },
+      { id: uid(), name: '基本機能開発', done: false, doneDate: null, effort: 90 },
+      { id: uid(), name: '動画生成機能', done: false, doneDate: null, effort: 80 },
+      { id: uid(), name: '多言語対応',   done: false, doneDate: null, effort: 55 },
+      { id: uid(), name: '動作検証',     done: false, doneDate: null, effort: 60 },
+      { id: uid(), name: '機能リリース', done: false, doneDate: null, effort: 70 },
+    ]
+  },
+];
+
+// ===== RENDER =====
+function render() {
+  // Overall progress (weighted by effort)
+  let totalEff = 0, doneEff = 0;
+  tasks.forEach(p => {
+    if (p.children.length === 0) {
+      totalEff += 50; if (p.done) doneEff += 50;
+    } else {
+      p.children.forEach(c => { totalEff += c.effort; if (c.done) doneEff += c.effort; });
+    }
+  });
+  const pct = totalEff === 0 ? 0 : Math.round(doneEff / totalEff * 100);
+  document.getElementById('overallBar').style.width = pct + '%';
+  document.getElementById('overallPct').textContent = pct + '%';
+  document.getElementById('headerDate').textContent =
+    new Date().toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  // Grid
+  const grid = document.getElementById('taskGrid');
+  grid.innerHTML = '';
+  tasks.forEach(p => grid.appendChild(buildParentCard(p)));
+}
+
+function buildParentCard(p) {
+  const doneCnt  = p.children.filter(c => c.done).length;
+  const totalCnt = p.children.length;
+  const totalEff = p.children.reduce((s, c) => s + c.effort, 0);
+  const doneEff  = p.children.filter(c => c.done).reduce((s, c) => s + c.effort, 0);
+  const barPct   = totalEff === 0 ? (p.done ? 100 : 0) : Math.round(doneEff / totalEff * 100);
+
   const card = document.createElement('div');
-  card.className = 'task-card' + (task.done ? ' done' : '');
-  card.dataset.id = task.id;
+  card.className = 'parent-card';
 
-  const subTotal = task.subtasks.length;
-  const subDone = task.subtasks.filter(s=>s.done).length;
-  const subPct = subTotal === 0 ? (task.done ? 100 : 0) : Math.round(subDone / subTotal * 100);
-  const prioClass = {high:'p-high',mid:'p-mid',low:'p-low'}[task.priority] || 'p-mid';
-  const prioLabel = {high:'高',mid:'中',low:'低'}[task.priority];
-  const mainId = 'cb-' + task.id;
-
+  const cbId = 'pcb-' + p.id;
   card.innerHTML = `
-    <div class="task-main">
+    <div class="parent-header">
       <div class="cb-wrap">
-        <input type="checkbox" id="${mainId}" ${task.done?'checked':''} onchange="toggleTask('${task.id}')">
-        <label class="cb-label" for="${mainId}"></label>
+        <input type="checkbox" id="${cbId}" ${p.done ? 'checked' : ''} onchange="toggleParent('${p.id}')">
+        <label class="cb-label" for="${cbId}"></label>
       </div>
-      <div class="task-info">
-        <div class="task-name ${task.done?'done-text':''}">${esc(task.name)}</div>
-        <div class="task-meta">
-          <span class="priority-badge ${prioClass}">${prioLabel}優先</span>
-          ${task.doneDate ? `<span class="check-date">✓ ${task.doneDate}</span>` : ''}
-          ${subTotal > 0 ? `<button class="toggle-sub ${task.subOpen?'open':''}" onclick="toggleSub('${task.id}')"><span class="arrow">▶</span> ${subDone}/${subTotal}</button>` : ''}
-        </div>
-        ${subTotal > 0 ? `
-        <div class="task-progress-mini">
-          <div class="mini-bar"><div class="mini-bar-fill" style="width:${subPct}%;background:${subPct===100?'var(--done)':subPct>0?'var(--warn)':'var(--border)'}"></div></div>
-          <div class="mini-pct">${subPct}%</div>
-        </div>` : ''}
-      </div>
-      <div class="task-actions no-print">
-        <button class="del-btn" onclick="deleteTask('${task.id}')">✕</button>
-      </div>
+      <div class="parent-name ${p.done ? 'done-text' : ''}">${esc(p.name)}</div>
+      ${totalCnt > 0 ? `<div class="parent-stat">${doneCnt}/${totalCnt}</div>` : ''}
+      ${p.doneDate ? `<div class="parent-done-date">✓ ${p.doneDate}</div>` : ''}
+      <button class="parent-del no-print" onclick="deleteParent('${p.id}')">✕</button>
     </div>
-    <div class="subtask-list ${task.subOpen?'open':''}" id="sub-${task.id}">
-      ${task.subtasks.map(s => subtaskHTML(task.id, s)).join('')}
-      <div class="add-sub-form no-print">
-        <input class="add-sub-input" placeholder="サブタスクを追加..." id="subinput-${task.id}" onkeydown="handleSubKey(event,'${task.id}')">
-        <button class="add-sub-btn" onclick="addSubtask('${task.id}')">＋</button>
-      </div>
+    <div class="parent-bar-track">
+      <div class="parent-bar-fill" style="width:${barPct}%"></div>
+    </div>
+    <div class="children-list">
+      ${p.children.map(c => buildChildRow(p.id, c)).join('')}
+    </div>
+    <div class="add-child-row no-print">
+      <input class="add-child-input" placeholder="子タスクを追加..."
+        id="cinput-${p.id}" onkeydown="if(event.key==='Enter') addChild('${p.id}')">
+      <button class="add-child-btn" onclick="addChild('${p.id}')">＋</button>
     </div>
   `;
   return card;
 }
 
-function subtaskHTML(taskId, s) {
-  const cbId = 'scb-' + s.id;
+function buildChildRow(parentId, c) {
+  const cbId = 'ccb-' + c.id;
   return `
-    <div class="subtask-item" data-sid="${s.id}">
-      <div class="cb-wrap">
-        <input type="checkbox" id="${cbId}" ${s.done?'checked':''} onchange="toggleSub2('${taskId}','${s.id}')">
+    <div class="child-row">
+      <div class="cb-wrap child-cb">
+        <input type="checkbox" id="${cbId}" ${c.done ? 'checked' : ''} onchange="toggleChild('${parentId}','${c.id}')">
         <label class="cb-label" for="${cbId}"></label>
       </div>
-      <div class="subtask-name ${s.done?'done-text':''}">${esc(s.name)}</div>
-      ${s.doneDate ? `<span class="sub-date">✓ ${s.doneDate}</span>` : ''}
-      <button class="sub-del no-print" onclick="deleteSubtask('${taskId}','${s.id}')">✕</button>
+      <div class="child-name ${c.done ? 'done-text' : ''}">${esc(c.name)}</div>
+      <div class="effort-wrap">
+        <div class="effort-bar">
+          <div class="effort-fill" style="width:${c.effort}%"></div>
+        </div>
+        <div class="effort-num" title="クリックして工数編集" onclick="editEffort('${parentId}','${c.id}')">${c.effort}</div>
+      </div>
+      <div class="child-done-date">${c.done && c.doneDate ? '✓ ' + c.doneDate : ''}</div>
+      <button class="child-del no-print" onclick="deleteChild('${parentId}','${c.id}')">✕</button>
     </div>
   `;
 }
 
-function esc(str) {
-  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function esc(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-function addTask() {
-  const inp = document.getElementById('addInput');
-  const prio = document.getElementById('addPrio');
+// ===== INTERACTIONS =====
+function addParent() {
+  const inp  = document.getElementById('addParentInput');
   const name = inp.value.trim();
   if (!name) return;
-  tasks.push({ id:t(), name, priority:prio.value, done:false, doneDate:null, subtasks:[], subOpen:false });
+  tasks.push({ id: uid(), name, done: false, doneDate: null, children: [] });
   inp.value = '';
   save(); render();
-  setTimeout(() => document.getElementById('addInput').focus(), 0);
+  setTimeout(() => document.getElementById('addParentInput').focus(), 0);
 }
-function handleAddKey(e) { if (e.key === 'Enter') addTask(); }
 
-function toggleTask(id) {
-  const task = tasks.find(tk=>tk.id===id);
-  if (!task) return;
-  task.done = !task.done;
-  task.doneDate = task.done ? today() : null;
+function addChild(parentId) {
+  const inp  = document.getElementById('cinput-' + parentId);
+  const name = inp.value.trim();
+  if (!name) return;
+  const p = tasks.find(t => t.id === parentId);
+  if (!p) return;
+  p.children.push({ id: uid(), name, done: false, doneDate: null, effort: 50 });
+  save(); render();
+  setTimeout(() => { const el = document.getElementById('cinput-' + parentId); if (el) el.focus(); }, 0);
+}
+
+function toggleParent(id) {
+  const p = tasks.find(t => t.id === id);
+  if (!p) return;
+  p.done = !p.done;
+  p.doneDate = p.done ? todayStr() : null;
+  if (p.done) p.children.forEach(c => { c.done = true; c.doneDate = c.doneDate || todayStr(); });
+  else        p.children.forEach(c => { c.done = false; c.doneDate = null; });
   save(); render();
 }
 
-function toggleSub(taskId) {
-  const task = tasks.find(tk=>tk.id===taskId);
-  if (!task) return;
-  task.subOpen = !task.subOpen;
-  save(); render();
-}
-
-function toggleSub2(taskId, subId) {
-  const task = tasks.find(tk=>tk.id===taskId);
-  if (!task) return;
-  const sub = task.subtasks.find(s=>s.id===subId);
-  if (!sub) return;
-  sub.done = !sub.done;
-  sub.doneDate = sub.done ? today() : null;
-  if (task.subtasks.length > 0 && task.subtasks.every(s=>s.done)) {
-    task.done = true; task.doneDate = today();
-  } else if (task.done && !task.subtasks.every(s=>s.done)) {
-    task.done = false; task.doneDate = null;
+function toggleChild(parentId, childId) {
+  const p = tasks.find(t => t.id === parentId);
+  if (!p) return;
+  const c = p.children.find(c => c.id === childId);
+  if (!c) return;
+  c.done = !c.done;
+  c.doneDate = c.done ? todayStr() : null;
+  // Sync parent
+  if (p.children.length > 0 && p.children.every(c => c.done)) {
+    p.done = true; p.doneDate = todayStr();
+  } else {
+    p.done = false; p.doneDate = null;
   }
   save(); render();
 }
 
-function addSubtask(taskId) {
-  const inp = document.getElementById('subinput-' + taskId);
-  const name = inp.value.trim();
-  if (!name) return;
-  const task = tasks.find(tk=>tk.id===taskId);
-  if (!task) return;
-  task.subtasks.push({ id:t(), name, done:false, doneDate:null });
-  task.subOpen = true;
+function editEffort(parentId, childId) {
+  const p = tasks.find(t => t.id === parentId);
+  if (!p) return;
+  const c = p.children.find(c => c.id === childId);
+  if (!c) return;
+  const val = prompt('工数 / 重みを入力してください (1〜100):', c.effort);
+  if (val === null) return;
+  const n = Math.max(1, Math.min(100, parseInt(val) || c.effort));
+  c.effort = n;
   save(); render();
-  setTimeout(() => { const el = document.getElementById('subinput-'+taskId); if(el) el.focus(); }, 0);
 }
-function handleSubKey(e, taskId) { if(e.key==='Enter') addSubtask(taskId); }
 
-function deleteTask(id) {
-  tasks = tasks.filter(tk=>tk.id!==id);
+function deleteParent(id) {
+  if (!confirm('この親タスクと全子タスクを削除しますか？')) return;
+  tasks = tasks.filter(t => t.id !== id);
   save(); render();
 }
-function deleteSubtask(taskId, subId) {
-  const task = tasks.find(tk=>tk.id===taskId);
-  if (!task) return;
-  task.subtasks = task.subtasks.filter(s=>s.id!==subId);
+
+function deleteChild(parentId, childId) {
+  const p = tasks.find(t => t.id === parentId);
+  if (!p) return;
+  p.children = p.children.filter(c => c.id !== childId);
   save(); render();
 }
 
