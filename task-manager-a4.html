@@ -72,6 +72,7 @@ body {
   transition: background 0.15s; white-space: nowrap;
 }
 .hdr-btn:hover { background: rgba(255,255,255,0.22); }
+.hdr-btn-text { margin-left: 3px; }
 
 /* ===== OVERALL PROGRESS BAR ===== */
 .overall-bar-wrap {
@@ -324,6 +325,7 @@ body {
   .header-title  { font-size: 12px; }
   .header-date   { display: none; }
   .hdr-btn       { font-size: 11px; padding: 4px 8px; }
+  .hdr-btn-text  { display: none; }
   .task-grid     { grid-template-columns: 1fr; gap: 8px; }
   .main-content  { padding: 10px; }
   .parent-name   { font-size: 13px; }
@@ -348,10 +350,13 @@ body {
   <div class="header-title">EPRESS DESIGN AI リリースタスク</div>
   <div class="header-right no-print">
     <div class="header-date" id="headerDate"></div>
-    <button class="hdr-btn" onclick="clearAll()">リセット</button>
-    <button class="hdr-btn" onclick="window.print()">🖨 印刷</button>
+    <button class="hdr-btn" onclick="exportCSV()">📤<span class="hdr-btn-text">CSV出力</span></button>
+    <button class="hdr-btn" onclick="triggerImport()">📥<span class="hdr-btn-text">CSV入力</span></button>
+    <button class="hdr-btn" onclick="clearAll()"><span class="hdr-btn-text">リセット</span></button>
+    <button class="hdr-btn" onclick="window.print()">🖨<span class="hdr-btn-text"> 印刷</span></button>
   </div>
 </div>
+<input type="file" id="csvImportInput" accept=".csv" style="display:none" onchange="importCSV(this)">
 
 <div class="overall-bar-wrap">
   <div class="overall-bar-fill" id="overallBar" style="width:0%"></div>
@@ -404,6 +409,67 @@ function esc(s) {
 }
 function save()    { localStorage.setItem('epressTasksV4',JSON.stringify(tasks)); }
 function clearAll(){ if(confirm('全データをリセットしますか？')){ tasks=[]; save(); render(); } }
+
+/* ===== CSV EXPORT ===== */
+function exportCSV(){
+  const rows=[['type','parent','child','status','done','doneDate','effort','memo']];
+  tasks.forEach(p=>{
+    rows.push(['parent',p.name,'',p.status,p.done?'1':'0',p.doneDate||'','',p.memo||'']);
+    p.children.forEach(c=>{
+      rows.push(['child',p.name,c.name,c.status,c.done?'1':'0',c.doneDate||'',c.effort??50,c.memo||'']);
+    });
+  });
+  const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download='tasks_'+new Date().toISOString().slice(0,10)+'.csv'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* ===== CSV IMPORT ===== */
+function triggerImport(){
+  document.getElementById('csvImportInput').value='';
+  document.getElementById('csvImportInput').click();
+}
+function importCSV(input){
+  const file=input.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try {
+      let text=e.target.result;
+      if(text.charCodeAt(0)===0xFEFF) text=text.slice(1);
+      const lines=text.split(/\r?\n/).filter(l=>l.trim());
+      if(lines.length<2){ alert('データが見つかりません'); return; }
+      function parseRow(line){
+        const res=[]; let cur='',inQ=false;
+        for(let i=0;i<line.length;i++){
+          const ch=line[i];
+          if(inQ){ if(ch==='"'&&line[i+1]==='"'){cur+='"';i++;} else if(ch==='"'){inQ=false;} else {cur+=ch;} }
+          else   { if(ch==='"'){inQ=true;} else if(ch===','){res.push(cur);cur='';} else {cur+=ch;} }
+        }
+        res.push(cur); return res;
+      }
+      const newTasks=[]; let cur=null;
+      for(let i=1;i<lines.length;i++){
+        const c=parseRow(lines[i]);
+        if(c[0]==='parent'){
+          cur=mkParent(c[1],[]);
+          cur.status=c[3]||'未着手'; cur.done=c[4]==='1';
+          cur.doneDate=c[5]||null; cur.memo=c[7]||'';
+          newTasks.push(cur);
+        } else if(c[0]==='child'&&cur){
+          const ch=mkChild(c[2],parseInt(c[6])||50);
+          ch.status=c[3]||'未着手'; ch.done=c[4]==='1';
+          ch.doneDate=c[5]||null; ch.memo=c[7]||'';
+          cur.children.push(ch);
+        }
+      }
+      if(!confirm('現在のデータを上書きしてインポートしますか？')) return;
+      tasks=newTasks; save(); render();
+    } catch(err){ alert('CSVの読み込みに失敗しました: '+err.message); }
+  };
+  reader.readAsText(file,'UTF-8');
+}
 
 /* ===== FACTORIES ===== */
 function mkParent(name,children){
