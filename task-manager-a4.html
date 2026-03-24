@@ -97,13 +97,14 @@ body {
 
 .task-grid {
   display: grid; grid-template-columns: 1fr 1fr 1fr;
-  gap: 10px; align-items: start;
+  gap: 10px;
 }
 
 /* ===== PARENT CARD ===== */
 .parent-card {
   background: var(--white); border: 1.5px solid #93c5fd;
   border-radius: 8px; overflow: hidden; animation: slideUp 0.2s ease;
+  display: flex; flex-direction: column;
 }
 
 .parent-header {
@@ -138,6 +139,10 @@ body {
 .parent-done-date {
   font-size: 9px; font-family: 'DM Mono', monospace;
   color: var(--done); white-space: nowrap; flex-shrink: 0;
+}
+.parent-last-updated {
+  font-size: 9px; font-family: 'DM Mono', monospace;
+  color: var(--sub); white-space: nowrap; flex-shrink: 0;
 }
 .parent-del {
   background: none; border: none; cursor: pointer;
@@ -191,10 +196,10 @@ body {
 .memo-textarea::placeholder { color: #d1d5db; }
 
 /* ===== CHILD ROWS ===== */
-.children-list { padding: 2px 0; }
+.children-list { padding: 2px 0; flex: 1; }
 
 .child-row {
-  display: flex; align-items: flex-start; gap: 6px;
+  display: flex; align-items: center; gap: 6px;
   padding: 5px 10px 5px 22px; transition: background 0.1s;
   border-bottom: 1px solid #f9fafb;
 }
@@ -236,7 +241,10 @@ body {
 
 .child-right {
   display: flex; flex-direction: column; align-items: flex-end;
-  gap: 3px; flex-shrink: 0; padding-top: 1px;
+  gap: 3px; flex-shrink: 0;
+}
+.child-status-memo-row {
+  display: flex; align-items: center; gap: 4px;
 }
 
 /* Effort bar */
@@ -408,7 +416,8 @@ function esc(s) {
     .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 function save()    { localStorage.setItem('epressTasksV4',JSON.stringify(tasks)); }
-function clearAll(){ if(confirm('全データをリセットしますか？')){ tasks=[]; save(); render(); } }
+function touchParent(id){ const p=tasks.find(t=>t.id===id); if(p) p.lastUpdated=todayStr(); }
+function clearAll(){ if(confirm('全データをリセットしますか？')){ tasks=defaultTasks(); save(); render(); } }
 
 /* ===== CSV EXPORT ===== */
 function exportCSV(){
@@ -473,41 +482,44 @@ function importCSV(input){
 
 /* ===== FACTORIES ===== */
 function mkParent(name,children){
-  return {id:uid(),name,done:false,doneDate:null,status:'未着手',memo:'',_memoOpen:false,children};
+  return {id:uid(),name,done:false,doneDate:null,status:'未着手',memo:'',_memoOpen:false,lastUpdated:null,children};
 }
 function mkChild(name,effort){
   return {id:uid(),name,done:false,doneDate:null,effort,status:'未着手',memo:'',_memoOpen:false};
 }
 
 /* ===== DATA ===== */
-let tasks = (JSON.parse(localStorage.getItem('epressTasksV4')||'null') || []);
-if(tasks.length===0) tasks = [
-  mkParent('商品設計',[
-    mkChild('SLA策定',14), mkChild('収益構造確定',47),
-    mkChild('将来収益算出',21), mkChild('業務フロー作成',50),
-  ]),
-  mkParent('関係者調整',[
-    mkChild('業務部（BPC社）',41), mkChild('営業部',88), mkChild('制作部',30),
-    mkChild('サポート部',16), mkChild('営業推進部（代理店展開）',88),
-  ]),
-  mkParent('販売準備',[
-    mkChild('契約書作成',50), mkChild('規約作成',50),
-    mkChild('イントラサイト資料掲載',50), mkChild('社内マニュアル作成',50),
-    mkChild('社員研修',50), mkChild('営業資料作成',50), mkChild('研修実施',50),
-  ]),
-  mkParent('企画承認',[
-    mkChild('SLA確定',55), mkChild('将来収益光主計確認',40),
-    mkChild('プロジェクト審査',80), mkChild('投融資委員会',90), mkChild('リリース稟議',65),
-  ]),
-  mkParent('商品登録',[
-    mkChild('商品名決定',86), mkChild('収益認識基準確認',44),
-    mkChild('商品マスタ登録申請',42), mkChild('プロセスDB改修（社内システム）',96),
-  ]),
-  mkParent('開発',[
-    mkChild('要件定義',75), mkChild('基本機能開発',90), mkChild('動画生成機能',80),
-    mkChild('多言語対応',55), mkChild('動作検証',60), mkChild('機能リリース',70),
-  ]),
-];
+function defaultTasks(){
+  return [
+    mkParent('商品設計',[
+      mkChild('SLA策定',50), mkChild('収益構造確定',50),
+      mkChild('将来収益算出',50), mkChild('業務フロー作成',50),
+    ]),
+    mkParent('関係者調整',[
+      mkChild('業務部（BPC社）',50), mkChild('営業部',50), mkChild('制作部',50),
+      mkChild('サポート部',50), mkChild('営業推進部（代理店展開）',50),
+    ]),
+    mkParent('販売準備',[
+      mkChild('契約書作成',50), mkChild('規約作成',50),
+      mkChild('イントラサイト資料掲載',50), mkChild('社内マニュアル作成',50),
+      mkChild('社員研修',50), mkChild('営業資料作成',50), mkChild('研修実施',50),
+    ]),
+    mkParent('企画承認',[
+      mkChild('SLA確定',50), mkChild('将来収益光主計確認',50),
+      mkChild('プロジェクト審査',50), mkChild('投融資委員会',50), mkChild('リリース稟議',50),
+    ]),
+    mkParent('商品登録',[
+      mkChild('商品名決定',50), mkChild('収益認識基準確認',50),
+      mkChild('商品マスタ登録申請',50), mkChild('プロセスDB改修（社内システム）',50),
+    ]),
+    mkParent('開発',[
+      mkChild('要件定義',50), mkChild('基本機能開発',50), mkChild('動画生成機能',50),
+      mkChild('多言語対応',50), mkChild('動作検証',50), mkChild('機能リリース',50),
+    ]),
+  ];
+}
+let tasks = JSON.parse(localStorage.getItem('epressTasksV4')||'null');
+if(!tasks || tasks.length===0) tasks = defaultTasks();
 
 /* ─── 旧データ補完 ─── */
 tasks.forEach(p=>{
@@ -574,6 +586,7 @@ function buildCard(p){
         <label class="cb-label" for="${cbId}"></label>
       </div>
       <div class="parent-name ${complete?'done-text':''}">${esc(p.name)}</div>
+      ${p.lastUpdated?`<div class="parent-last-updated">更新：${p.lastUpdated}</div>`:''}
       <select class="status-select" id="pst-${p.id}" onchange="changeParentStatus('${p.id}',this.value)">
         ${stOptions(p.status)}
       </select>
@@ -616,25 +629,21 @@ function buildChild(parentId,c){
         <label class="cb-label" for="${cbId}"></label>
       </div>
       <div class="child-main">
-        <div class="child-name-row">
-          <div class="child-name ${c.done?'done-text':''}">${esc(c.name)}</div>
-          <select class="child-status-select" id="cst-${c.id}"
-            onchange="changeChildStatus('${parentId}','${c.id}',this.value)">
-            ${stOptions(c.status)}
-          </select>
-        </div>
+        <div class="child-name ${c.done?'done-text':''}">${esc(c.name)}</div>
         <textarea class="child-memo-textarea ${c._memoOpen?'open':''}" id="cmtx-${c.id}"
           placeholder="メモ..."
           oninput="saveChildMemo('${parentId}','${c.id}')">${esc(c.memo)}</textarea>
       </div>
       <div class="child-right">
-        <div class="effort-wrap">
-          <div class="effort-bar"><div class="effort-fill" style="width:${c.effort}%"></div></div>
-          <div class="effort-num" title="クリックで編集" onclick="editEffort('${parentId}','${c.id}')">${c.effort}</div>
-        </div>
         <div class="child-done-date">${c.done&&c.doneDate?'✓ '+c.doneDate:''}</div>
-        <button class="child-memo-btn no-print ${hasMemo||c._memoOpen?'active':''}"
-          title="メモを開閉" onclick="toggleChildMemo('${parentId}','${c.id}')">✏️</button>
+        <div class="child-status-memo-row">
+          <select class="child-status-select" id="cst-${c.id}"
+            onchange="changeChildStatus('${parentId}','${c.id}',this.value)">
+            ${stOptions(c.status)}
+          </select>
+          <button class="child-memo-btn no-print ${hasMemo||c._memoOpen?'active':''}"
+            title="メモを開閉" onclick="toggleChildMemo('${parentId}','${c.id}')">✏️</button>
+        </div>
       </div>
       <button class="child-del no-print" onclick="deleteChild('${parentId}','${c.id}')">✕</button>
     </div>
@@ -655,7 +664,7 @@ function addChild(parentId){
   const name=inp.value.trim(); if(!name) return;
   const p=tasks.find(t=>t.id===parentId); if(!p) return;
   p.children.push(mkChild(name,50));
-  save(); render();
+  touchParent(parentId); save(); render();
   setTimeout(()=>{ const el=document.getElementById('cinput-'+parentId); if(el) el.focus(); },0);
 }
 
@@ -669,7 +678,7 @@ function toggleParent(id){
     p.done=true; p.doneDate=todayStr(); p.status='完了';
     p.children.forEach(c=>{ c.done=true; c.doneDate=c.doneDate||todayStr(); c.status='完了'; });
   }
-  save(); render();
+  touchParent(id); save(); render();
 }
 
 function toggleChild(parentId,childId){
@@ -684,7 +693,7 @@ function toggleChild(parentId,childId){
     p.done=false; p.doneDate=null;
     if(p.status==='完了') p.status='進行中';
   }
-  save(); render();
+  touchParent(parentId); save(); render();
 }
 
 function changeParentStatus(id,val){
@@ -696,7 +705,7 @@ function changeParentStatus(id,val){
   } else if(val==='未着手'){
     p.done=false; p.doneDate=null;
   }
-  save(); render();
+  touchParent(id); save(); render();
 }
 
 function changeChildStatus(parentId,childId,val){
@@ -711,7 +720,7 @@ function changeChildStatus(parentId,childId,val){
     p.done=false; p.doneDate=null;
     if(p.status==='完了') p.status='進行中';
   }
-  save(); render();
+  touchParent(parentId); save(); render();
 }
 
 /* メモ開閉（親）*/
@@ -728,7 +737,7 @@ function toggleMemo(parentId){
 function saveMemo(parentId){
   const p=tasks.find(t=>t.id===parentId); if(!p) return;
   const el=document.getElementById('mtx-'+parentId); if(!el) return;
-  p.memo=el.value; save();
+  p.memo=el.value; touchParent(parentId); save();
   const mt=document.getElementById('mt-'+parentId);
   if(mt) mt.innerHTML=`<span class="arr">${p._memoOpen?'▼':'▶'}</span> メモ${p.memo?'　<span style="color:#4f46e5;font-size:9px;">●</span>':''}`;
 }
@@ -761,7 +770,7 @@ function editEffort(parentId,childId){
   const val=prompt('工数 / 重みを入力してください (1〜100):',c.effort);
   if(val===null) return;
   c.effort=Math.max(1,Math.min(100,parseInt(val)||c.effort));
-  save(); render();
+  touchParent(parentId); save(); render();
 }
 
 function deleteParent(id){
@@ -771,7 +780,7 @@ function deleteParent(id){
 
 function deleteChild(parentId,childId){
   const p=tasks.find(t=>t.id===parentId); if(!p) return;
-  p.children=p.children.filter(c=>c.id!==childId); save(); render();
+  p.children=p.children.filter(c=>c.id!==childId); touchParent(parentId); save(); render();
 }
 
 render();
