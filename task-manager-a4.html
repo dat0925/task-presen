@@ -154,14 +154,6 @@ body {
   transition: width 0.4s ease;
 }
 
-/* ===== STATUS ROW (親) ===== */
-.parent-sub-row {
-  display: flex; align-items: center; gap: 6px;
-  padding: 5px 10px; border-bottom: 1px solid #f1f5f9;
-  background: #fafafa;
-}
-.status-label-tag { font-size: 10px; color: var(--sub); flex-shrink: 0; }
-
 .status-select {
   font-size: 10px; font-family: 'Noto Sans JP', sans-serif;
   border: 1px solid; border-radius: 20px;
@@ -211,6 +203,7 @@ body {
 .child-cb input:checked + .cb-label::after { font-size: 8px; }
 
 .child-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.child-name-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .child-name {
   font-size: 11px; color: var(--text);
   word-break: break-all; line-height: 1.35;
@@ -513,18 +506,15 @@ function buildCard(p){
         <label class="cb-label" for="${cbId}"></label>
       </div>
       <div class="parent-name ${complete?'done-text':''}">${esc(p.name)}</div>
+      <select class="status-select" id="pst-${p.id}" onchange="changeParentStatus('${p.id}',this.value)">
+        ${stOptions(p.status)}
+      </select>
       ${totalCnt>0?`<div class="parent-stat">${doneCnt}/${totalCnt}</div>`:''}
       ${p.doneDate?`<div class="parent-done-date">✓ ${p.doneDate}</div>`:''}
       <button class="parent-del no-print" onclick="deleteParent('${p.id}')">✕</button>
     </div>
     <div class="parent-bar-track">
       <div class="parent-bar-fill" style="width:${barPct}%"></div>
-    </div>
-    <div class="parent-sub-row">
-      <span class="status-label-tag">ステータス</span>
-      <select class="status-select" id="pst-${p.id}" onchange="changeParentStatus('${p.id}',this.value)">
-        ${stOptions(p.status)}
-      </select>
     </div>
     <div class="children-list">
       ${p.children.map(c=>buildChild(p.id,c)).join('')}
@@ -558,11 +548,13 @@ function buildChild(parentId,c){
         <label class="cb-label" for="${cbId}"></label>
       </div>
       <div class="child-main">
-        <div class="child-name ${c.done?'done-text':''}">${esc(c.name)}</div>
-        <select class="child-status-select" id="cst-${c.id}"
-          onchange="changeChildStatus('${parentId}','${c.id}',this.value)">
-          ${stOptions(c.status)}
-        </select>
+        <div class="child-name-row">
+          <div class="child-name ${c.done?'done-text':''}">${esc(c.name)}</div>
+          <select class="child-status-select" id="cst-${c.id}"
+            onchange="changeChildStatus('${parentId}','${c.id}',this.value)">
+            ${stOptions(c.status)}
+          </select>
+        </div>
         <textarea class="child-memo-textarea ${c._memoOpen?'open':''}" id="cmtx-${c.id}"
           placeholder="メモ..."
           oninput="saveChildMemo('${parentId}','${c.id}')">${esc(c.memo)}</textarea>
